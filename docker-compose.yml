@@ -1,0 +1,74 @@
+version: '3'
+
+# This compose file is used for testing and development purposes and can be used only as a reference for production setup
+services:
+  mirakl:
+    image: sendcloud/mirakl
+    build:
+      context: .
+      dockerfile: app.Dockerfile
+      args:
+        - SSH_KEY
+    depends_on:
+      - database
+    working_dir: /var/www/
+    env_file: '.env'
+    environment:
+      - DB_HOST=database
+      - APP_KEY=base64:1+iO9mwDC/dIpsSvHFdIwN6I3P3k6+7BZ2VIFRdvsSs=
+      - CONTAINER_ROLE=app
+      - APP_ENV=local
+    volumes:
+      - ./:/var/www
+      - ./storage:/var/www/storage
+    networks:
+      - app-network
+
+  mirakl-nginx:
+    image: sendcloud/mirakl-nginx
+    build:
+      context: .
+      dockerfile: web.Dockerfile
+    container_name: mirakl-nginx
+    tty: true
+    ports:
+      - "80:8001"
+      - "443:8001"
+    depends_on:
+      - mirakl
+    volumes:
+      - ./:/var/www
+      - ./.docker/dev/conf:/etc/nginx/conf.d/
+      - ./.docker/dev/certs:/certs
+    networks:
+      - app-network
+
+  cron:
+    image: sendcloud/mirakl
+    depends_on:
+      - mirakl
+      - database
+    working_dir: /var/www
+    env_file: '.env'
+    environment:
+      - DB_HOST=database
+      - CONTAINER_ROLE=scheduler
+      - APP_ENV=local
+    networks:
+      - app-network
+
+  database:
+    image: mysql:5.7
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    ports:
+      - "33061:3306"
+    env_file:
+      - ./mysql.env
+    volumes:
+      - ./database/data:/var/lib/mysql
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
