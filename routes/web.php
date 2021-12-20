@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ConnectController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,4 +16,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::group(['prefix' => 'v1', 'as' => 'v1'], static function () {
+    Route::post('connect', ['uses' => '\\' . ConnectController::class . '@connect'])->name('.connect');
 });

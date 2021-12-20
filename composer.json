@@ -18,7 +18,8 @@
         "laravel/tinker": "*",
         "sendcloud/middleware-components": "1.0.31",
         "sentry/sentry-laravel": "^2.7.0",
-      "ext-curl": "*"
+      "ext-curl": "*",
+        "ext-decimal": "*"
     },
     "require-dev": {
         "beyondcode/laravel-dump-server": "^1.0",

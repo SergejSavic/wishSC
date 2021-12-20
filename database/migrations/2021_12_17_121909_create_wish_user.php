@@ -14,7 +14,8 @@ class CreateWishUser extends Migration
     public function up()
     {
         Schema::create('wish_users', function (Blueprint $table) {
-            $table->bigIncrements('merchantId');
+            $table->bigIncrements('id');
+            $table->integer('merchantId');
             $table->string('accessToken', 1000)->nullable();
             $table->string('refreshToken')->nullable();
             $table->integer('accessTokenExpiration')->nullable();

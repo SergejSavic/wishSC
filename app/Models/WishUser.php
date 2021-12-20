@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * Class WishUser
  *
+ * @property int id
  * @property int merchantId
  * @property string accessToken
  * @property string refreshToken
