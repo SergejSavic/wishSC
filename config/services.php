@@ -30,10 +30,11 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
-    'mirakl' => [
-        'auth_url' => env('MIRAKL_AUTH_URL'),
-        'client_secret' => env('MIRAKL_CLIENT_SECRET', ''),
-        'client_id' => env('MIRAKL_CLIENT_ID', ''),
+    'wish' => [
+        'auth_url' => env('WISH_AUTH_URL'),
+        'api_url' => env('WISH_API_URL'),
+        'client_secret' => env('WISH_CLIENT_SECRET', ''),
+        'client_id' => env('WISH_CLIENT_ID', ''),
     ],
     'sendcloud' => [
         'panel_url' => env('SENDCLOUD_PANEL_URL', 'https://panel.sendcloud.sc/')

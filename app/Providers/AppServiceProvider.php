@@ -2,6 +2,12 @@
 
 namespace App\Providers;
 
+use App\Contracts\Proxy\WishAuthProxyInterface;
+use App\Contracts\Repositories\UserRepositoryInterface;
+use App\Contracts\Services\Auth\WishAuthServiceInterface;
+use App\Proxy\AuthProxy;
+use App\Repositories\UserRepository;
+use App\Services\Business\Authentication\AuthService;
 use App\Services\Business\Configuration\ConfigurationService;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
@@ -25,6 +31,8 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         $this->registerServices();
+        $this->registerProxies();
+        $this->registerRepositories();
     }
 
     /**
@@ -58,5 +66,22 @@ class AppServiceProvider extends ServiceProvider
     protected function registerServices(): void
     {
         $this->app->singleton(Configuration::class, ConfigurationService::class);
+        $this->app->singleton(WishAuthServiceInterface::class, AuthService::class);
+    }
+
+    /**
+     * Register proxies
+     */
+    protected function registerProxies(): void
+    {
+        $this->app->singleton(WishAuthProxyInterface::class, AuthProxy::class);
+    }
+
+    /**
+     * Register repositories
+     */
+    protected function registerRepositories(): void
+    {
+        $this->app->singleton(UserRepositoryInterface::class, UserRepository::class);
     }
 }
