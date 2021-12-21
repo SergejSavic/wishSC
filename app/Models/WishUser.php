@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
  * Class WishUser
  *
  * @property int id
- * @property int merchantId
+ * @property string merchantId
  * @property string accessToken
  * @property string refreshToken
  * @property int accessTokenExpiration
