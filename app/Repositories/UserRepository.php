@@ -45,6 +45,7 @@ class UserRepository implements UserRepositoryInterface
         $user->accessToken = $result->getAccessToken();
         $user->refreshToken = $result->getRefreshToken();
         $user->merchantId = $result->getMerchantId();
+        $user->accessTokenExpiration = $result->getAccessTokenExpiration();
 
         $user->save();
     }
