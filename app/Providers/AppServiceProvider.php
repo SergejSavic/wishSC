@@ -6,10 +6,12 @@ use App\Contracts\Proxy\WishAuthProxyInterface;
 use App\Contracts\Proxy\WishProxyInterface;
 use App\Contracts\Repositories\UserRepositoryInterface;
 use App\Contracts\Services\Auth\WishAuthServiceInterface;
+use App\Contracts\Services\Auth\WishTokenServiceInterface;
 use App\Proxy\AuthProxy;
 use App\Proxy\WishProxy;
 use App\Repositories\UserRepository;
 use App\Services\Business\Authentication\AuthService;
+use App\Services\Business\Authentication\TokenService;
 use App\Services\Business\Configuration\ConfigurationService;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
@@ -69,6 +71,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->singleton(Configuration::class, ConfigurationService::class);
         $this->app->singleton(WishAuthServiceInterface::class, AuthService::class);
+        $this->app->singleton(WishTokenServiceInterface::class, TokenService::class);
     }
 
     /**

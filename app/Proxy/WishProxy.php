@@ -4,6 +4,7 @@ namespace App\Proxy;
 
 use App\Contracts\Proxy\WishProxyInterface;
 use App\Contracts\Services\Auth\WishAuthServiceInterface;
+use App\Contracts\Services\Auth\WishTokenServiceInterface;
 use App\DTO\Order\Order;
 use App\DTO\Product\Product;
 use App\DTO\Refund\Refund;
@@ -19,19 +20,26 @@ use SendCloud\Infrastructure\Utility\Exceptions\HttpRequestException;
 class WishProxy extends BaseProxy implements WishProxyInterface
 {
     private const LIMIT = 100;
+    /**
+     * @var WishTokenServiceInterface
+     */
+    private WishTokenServiceInterface $tokenService;
 
     /**
      * ResourceProxy constructor.
      *
      * @param HttpClient $httpClient
      * @param WishAuthServiceInterface $authService
+     * @param WishTokenServiceInterface $tokenService
      */
     public function __construct(
         HttpClient $httpClient,
         WishAuthServiceInterface $authService,
+        WishTokenServiceInterface $tokenService
     )
     {
         parent::__construct($httpClient, $authService);
+        $this->tokenService = $tokenService;
     }
 
     /**
@@ -39,6 +47,7 @@ class WishProxy extends BaseProxy implements WishProxyInterface
      * @throws HttpCommunicationException
      * @throws HttpRequestException
      * @throws JsonException
+     * @throws Exception
      */
     public function getOrders(DateTime $date, string $status): array
     {
@@ -143,7 +152,7 @@ class WishProxy extends BaseProxy implements WishProxyInterface
     {
         return [
             'content' => 'Content-Type: application/json',
-            'authorization' => 'Authorization: Bearer ' . env('TOKEN')
+            'authorization' => 'Authorization: Bearer ' . $this->tokenService->getAccessToken()
         ];
     }
 }

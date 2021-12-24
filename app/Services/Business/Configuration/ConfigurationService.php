@@ -66,30 +66,30 @@ class ConfigurationService extends MiddlewareConfigurationService
     }
 
     /**
-     * Gets integration code
-     *
-     * @return string|null
-     */
-    public function getIntegrationCode(): ?string
-    {
-        return $this->configRepository->getValue('SENDCLOUD_INTEGRATION_CODE', $this->getContext());
-    }
-
-    /**
-     * Sets integration code
-     *
-     * @param string $integrationCode
-     */
-    public function setIntegrationCode(string $integrationCode): void
-    {
-        $this->configRepository->saveValue('SENDCLOUD_INTEGRATION_CODE', $integrationCode, $this->getContext());
-    }
-
-    /**
      * @inheritdoc
      */
     public function isServicePointEnabled(): bool
     {
         return false;
+    }
+
+    /**
+     * Gets one time token - guid
+     *
+     * @return string|null
+     */
+    public function getGuid(): ?string
+    {
+        return $this->configRepository->getValue('WISH_GUID', $this->getContext());
+    }
+
+    /**
+     * Sets guid
+     *
+     * @param string $guid
+     */
+    public function setGuid(string $guid): void
+    {
+        $this->configRepository->saveValue('WISH_GUID', $guid, $this->getContext());
     }
 }

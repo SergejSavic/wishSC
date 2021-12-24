@@ -9,10 +9,10 @@ use Illuminate\Database\Eloquent\Model;
  * Class WishUser
  *
  * @property int id
- * @property string merchantId
+ * @property string context
  * @property string accessToken
  * @property string refreshToken
- * @property int accessTokenExpiration
+ * @property string accessTokenExpiration
  *
  * @method static Builder where($key, $value)
  * @method static WishUser first()

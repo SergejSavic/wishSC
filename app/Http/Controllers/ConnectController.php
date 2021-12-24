@@ -35,7 +35,7 @@ class ConnectController extends BaseController
      */
     public function __construct(
         Configuration $configService,
-        Proxy         $sendcloudProxy
+        Proxy $sendcloudProxy
     )
     {
         parent::__construct($configService);

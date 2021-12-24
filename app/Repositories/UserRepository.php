@@ -23,7 +23,8 @@ class UserRepository implements UserRepositoryInterface
         if ($context === null) {
             return null;
         }
-        return WishUser::where('context', $context)->get()->first();
+
+        return $this->getUsersCount() > 0 ? WishUser::where('context', $context)->get()->first() : null;
     }
 
     /**
@@ -44,7 +45,6 @@ class UserRepository implements UserRepositoryInterface
     {
         $user->accessToken = $result->getAccessToken();
         $user->refreshToken = $result->getRefreshToken();
-        $user->merchantId = $result->getMerchantId();
         $user->accessTokenExpiration = $result->getAccessTokenExpiration();
 
         $user->save();
