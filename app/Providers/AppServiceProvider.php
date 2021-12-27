@@ -67,7 +67,9 @@ class AppServiceProvider extends ServiceProvider
             ServiceRegister::registerService(SendCloudProxyInterface::class, static function () {
                 return app(SendCloudProxyInterface::class);
             });
-
+            ServiceRegister::registerService(OrderServiceInterface::class, static function () {
+                return app(OrderServiceInterface::class);
+            });
         } catch (InvalidArgumentException $exception) {
             // Do nothing if service is already registered
         }
