@@ -4,6 +4,7 @@ namespace App\Http;
 
 use App\Http\Middleware\CheckForMaintenanceMode;
 use App\Http\Middleware\EncryptCookies;
+use App\Http\Middleware\SendCloudRouter;
 use App\Http\Middleware\TrimStrings;
 use App\Http\Middleware\TrustProxies;
 use App\Http\Middleware\VerifyCsrfToken;
@@ -75,7 +76,8 @@ class Kernel extends HttpKernel
         'can' => Authorize::class,
         'signed' => ValidateSignature::class,
         'throttle' => ThrottleRequests::class,
-        'verified' => EnsureEmailIsVerified::class
+        'verified' => EnsureEmailIsVerified::class,
+        'sendcloud.router' => SendCloudRouter::class
     ];
 
     /**
