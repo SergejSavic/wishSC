@@ -10,6 +10,7 @@ use App\Contracts\Services\Auth\WishTokenServiceInterface;
 use App\Contracts\Services\Orders\Wish\RefundServiceInterface;
 use App\Contracts\Services\Orders\Wish\ShipmentServiceInterface;
 use App\Contracts\Services\RefundReasonServiceInterface;
+use App\Http\Controllers\WelcomeController;
 use App\Proxy\AuthProxy;
 use App\Proxy\Sendcloud\SendcloudProxy;
 use App\Proxy\WishProxy;
@@ -26,6 +27,7 @@ use Illuminate\Support\ServiceProvider;
 use SendCloud\BusinessLogic\Interfaces\OrderService as OrderServiceInterface;
 use SendCloud\Infrastructure\Interfaces\Required\Configuration;
 use SendCloud\BusinessLogic\Interfaces\Proxy as SendCloudProxyInterface;
+use SendCloud\MiddlewareComponents\Controllers\Backend\WelcomeController as MiddlewareWelcomeController;
 use SendCloud\Infrastructure\ServiceRegister;
 use SendCloud\MiddlewareComponents\Sentry\Registrator;
 use InvalidArgumentException;
@@ -46,6 +48,7 @@ class AppServiceProvider extends ServiceProvider
         $this->registerServices();
         $this->registerProxies();
         $this->registerRepositories();
+        $this->overrideMiddlewareClasses();
     }
 
     /**
@@ -105,5 +108,13 @@ class AppServiceProvider extends ServiceProvider
     protected function registerRepositories(): void
     {
         $this->app->singleton(UserRepositoryInterface::class, UserRepository::class);
+    }
+
+    /**
+     * Overrides classes implemented in middleware components
+     */
+    protected function overrideMiddlewareClasses(): void
+    {
+        $this->app->bind(MiddlewareWelcomeController::class, WelcomeController::class);
     }
 }
