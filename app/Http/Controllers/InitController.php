@@ -39,7 +39,7 @@ class InitController extends BaseController
     {
         try {
             $this->verifyPayload($request);
-            $this->configService->setContext($request->get('integration_id'));
+            $this->configService->setContext($request->get('merchant_id'));
             $this->validateSendCloudParameters($request);
             $this->initializeApplication();
 
@@ -98,7 +98,7 @@ class InitController extends BaseController
      */
     private function verifyPayload(Request $request): void
     {
-        $expectedKeys = ['integration_id', 'secret_key', 'public_key'];
+        $expectedKeys = ['merchant_id', 'secret_key', 'public_key'];
 
         $this->verifyArrayKeys($expectedKeys, $request);
     }

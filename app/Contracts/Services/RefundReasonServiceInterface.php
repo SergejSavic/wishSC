@@ -5,7 +5,7 @@ namespace App\Contracts\Services;
 interface RefundReasonServiceInterface
 {
     /**
-     * Get refund reason
+     * Get refund reason code
      *
      * @param string|null $context
      * @return string|null

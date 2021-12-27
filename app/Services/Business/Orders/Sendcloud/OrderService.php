@@ -205,6 +205,7 @@ class OrderService implements OrderServiceInterface
                 }
                 return;
             }
+
             if ($order->getSendCloudStatus() !== 'Announcement failed') {
                 $this->shippingService->fulfillOrder($parcel, $order->getId());
             }
