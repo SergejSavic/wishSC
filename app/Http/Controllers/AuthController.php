@@ -7,7 +7,6 @@ use App\DTO\AuthInfo\AuthInfo;
 use App\Exceptions\RequestPayloadNotValid;
 use App\Services\Business\Authentication\AuthService;
 use App\Services\Business\Configuration\ConfigurationService;
-use App\Services\Business\Orders\Sendcloud\OrderService;
 use SendCloud\Infrastructure\Logger\Logger;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -89,7 +88,7 @@ class AuthController extends BaseController
         if (!$request->has('code')) {
             throw new RequestPayloadNotValid('Credentials not valid.', 400);
         }
-        $this->configService->setContext($request->get('merchant_id'));
+        $this->configService->setContext($request->get('state'));
 
         $publicKey = $this->configService->getPublicKey();
         $secretKey = $this->configService->getSecretKey();

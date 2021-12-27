@@ -1,0 +1,146 @@
+
+* {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+}
+
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+    outline: none;
+    outline: 0;
+    font-family: 'Lato', sans-serif;
+    font-weight:400;
+    -webkit-font-smoothing: antialiased;
+    -moz-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+    background:red; /* WebKit/Blink Browsers */
+    color:#fff
+}
+::-moz-selection {
+    background:red; /* Gecko Browsers */
+    color:#fff;
+}
+
+
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+    display: block;
+}
+
+.clear {
+    clear: both;
+}
+
+table {
+    width: 100%;
+}
+
+img{
+    margin:0px;
+    padding:0px;
+}
+
+
+#wrapper{
+    display:flex;
+    flex-direction: row;
+    align-items: stretch;
+    height:100vh;
+}
+
+.wrapperButton{
+    width:50%;
+    display:flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content:center;
+}
+
+#left{
+    background-color:#fff;
+
+}
+
+#right{
+    background-color:#1563A3;
+}
+
+.btnConnect{
+    max-width: 220px;
+    width:90%;
+    height:48px;
+    border-radius: 5px;
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    -o-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+    cursor:pointer;
+    overflow:hidden;
+    display:flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content:center;
+    margin-left: auto;
+    margin-right: auto;
+
+}
+
+.btnConnect.blue{
+    background-color:#1563A3;
+    color:#fff
+}
+
+.btnConnect.blue:hover{
+    background-color:#0C4879;
+    -webkit-box-shadow: 0px 3px 6px 0px rgba(0,0,0,0.25);
+    -moz-box-shadow: 0px 3px 6px 0px rgba(0,0,0,0.25);
+    box-shadow: 0px 3px 6px 0px rgba(0,0,0,0.25);
+}
+
+.btnConnect.white{
+    background-color:#fff;
+    color:#0C4879
+}
+
+.btnConnect.white:hover{
+    -webkit-box-shadow: 0px 3px 6px 0px rgba(0,0,0,0.25);
+    -moz-box-shadow: 0px 3px 6px 0px rgba(0,0,0,0.25);
+    box-shadow: 0px 3px 6px 0px rgba(0,0,0,0.25);
+}
+
+.logoWish{
+    width:25px;
+    margin-right:10px;
+}
+
+.logoWish svg{
+    width:100%;
+}
+
+.btnConnect.blue .logoWish .logoSvg{ fill:#fff;}
+.btnConnect.white .logoWish .logoSvg{ fill:#1563A3;}
