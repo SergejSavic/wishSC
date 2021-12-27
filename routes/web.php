@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
 Route::get('callback', ['uses' => '\\' . AuthController::class . '@index'])->name('.wish.auth');
 Route::post('init', ['uses' => '\\' . InitController::class . '@init'])->name('.wish.init');
 

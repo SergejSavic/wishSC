@@ -32,7 +32,6 @@ class AuthController extends BaseController
      * @var AuthService
      */
     private AuthService $authService;
-    private OrderService $orderService;
 
     /**
      * InitController constructor.
@@ -43,14 +42,12 @@ class AuthController extends BaseController
     public function __construct(
         ConfigurationService $configService,
         WishAuthProxyInterface $authProxy,
-        AuthService $authService,
-        OrderService $orderService
+        AuthService $authService
     )
     {
         parent::__construct($configService);
         $this->authProxy = $authProxy;
         $this->authService = $authService;
-        $this->orderService = $orderService;
     }
 
     /**
