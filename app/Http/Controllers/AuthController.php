@@ -7,6 +7,7 @@ use App\DTO\AuthInfo\AuthInfo;
 use App\Exceptions\RequestPayloadNotValid;
 use App\Services\Business\Authentication\AuthService;
 use App\Services\Business\Configuration\ConfigurationService;
+use App\Services\Business\Orders\Sendcloud\OrderService;
 use SendCloud\Infrastructure\Logger\Logger;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,6 +32,7 @@ class AuthController extends BaseController
      * @var AuthService
      */
     private AuthService $authService;
+    private OrderService $orderService;
 
     /**
      * InitController constructor.
@@ -41,12 +43,14 @@ class AuthController extends BaseController
     public function __construct(
         ConfigurationService $configService,
         WishAuthProxyInterface $authProxy,
-        AuthService $authService
+        AuthService $authService,
+        OrderService $orderService
     )
     {
         parent::__construct($configService);
         $this->authProxy = $authProxy;
         $this->authService = $authService;
+        $this->orderService = $orderService;
     }
 
     /**
