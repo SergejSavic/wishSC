@@ -55,7 +55,7 @@ class WishProxy extends BaseProxy implements WishProxyInterface
 
         $parameters = [
             'limit' => self::LIMIT,
-            'updated_at_min' => date_format($date, 'Y-m-d\Th:m:s.v+h:m'),
+            'updated_at_min' => date_format($date, 'Y-m-d\TH:i:s.vP'),
             'states' => $status,
             'sort_by' => 'updated_at.desc'
         ];
