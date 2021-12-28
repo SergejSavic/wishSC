@@ -4,22 +4,71 @@ namespace App\DTO\Sendcloud;
 
 use App\DTO\AbstractDTO;
 
+/**
+ * Class SenderAddress
+ * @package App\DTO\Sendcloud
+ */
 class SenderAddress extends AbstractDTO
 {
+    /**
+     * @var int
+     */
     private int $id;
+    /**
+     * @var string
+     */
     private string $companyName;
+    /**
+     * @var string
+     */
     private string $contactName;
+    /**
+     * @var string
+     */
     private string $email;
+    /**
+     * @var string
+     */
     private string $telephone;
+    /**
+     * @var string
+     */
     private string $street;
+    /**
+     * @var string
+     */
     private string $houseNumber;
+    /**
+     * @var string
+     */
     private string $postalBox;
+    /**
+     * @var string
+     */
     private string $postalCode;
+    /**
+     * @var string
+     */
     private string $city;
+    /**
+     * @var string
+     */
     private string $country;
-    private string $vatNumber;
-    private string $cocNumber;
-    private string $eoriNumber;
+    /**
+     * @var string|null
+     */
+    private ?string $vatNumber;
+    /**
+     * @var string|null
+     */
+    private ?string $cocNumber;
+    /**
+     * @var string|null
+     */
+    private ?string $eoriNumber;
+    /**
+     * @var int
+     */
     private int $brandId;
 
     /**

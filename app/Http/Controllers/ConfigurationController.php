@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Contracts\Services\AutomaticCancellationServiceInterface;
 use App\Contracts\Services\RefundReasonServiceInterface;
+use App\Exceptions\RequestPayloadNotValid;
 use App\Services\Business\Configuration\ConfigurationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -68,9 +69,12 @@ class ConfigurationController
      *
      * @param Request $request
      * @return JsonResponse
+     * @throws RequestPayloadNotValid
      */
     public function post(Request $request): JsonResponse
     {
+        $this->verifyPayload($request);
+
         $this->refundReasonService->saveRefundReason(
             $request->get('refund'),
             $this->configurationService->getContext()
@@ -85,5 +89,18 @@ class ConfigurationController
             'refund' => $request->get('refund'),
             'automaticCancellation' => filter_var($request->get('automaticCancellation'), FILTER_VALIDATE_BOOLEAN)
         ]);
+    }
+
+    /**
+     * Throws RequestPayloadNotValid if payload doesn't contain all information
+     *
+     * @param Request $request
+     * @throws RequestPayloadNotValid
+     */
+    private function verifyPayload(Request $request): void
+    {
+        if (!$request->has('refund')) {
+            throw new RequestPayloadNotValid('Credentials not valid.', 400);
+        }
     }
 }

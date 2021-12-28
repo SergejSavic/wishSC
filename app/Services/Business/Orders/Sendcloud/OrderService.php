@@ -170,14 +170,6 @@ class OrderService implements OrderServiceInterface
     {
         try {
             $salesOrder = $this->proxy->getOrderById($orderNumber);
-            $this->updateOrderStatus($this->transformOrder($salesOrder));
-            if ($salesOrder === null) {
-                $parcel = $this->sendcloudProxy->getParcelByOrderNumber($orderNumber);
-
-                if ($parcel) {
-                    $salesOrder = $this->proxy->getOrderById($parcel->getExternalOrderId());
-                }
-            }
 
             return $salesOrder ? $this->transformOrder($salesOrder) : null;
         } catch (Exception $exception) {
@@ -198,8 +190,7 @@ class OrderService implements OrderServiceInterface
     {
         $parcel = Parcel::fromArray($this->getProxy()->getParcelById($order->getSendCloudParcelId()));
         try {
-            if ($order->getSendCloudStatus() === 'Cancelled' || $order->getSendCloudStatus() === 'Cancellation requested'
-                || $parcel->isIsReturn()) {
+            if ($order->getSendCloudStatus() === 'Cancelled' || $order->getSendCloudStatus() === 'Cancellation requested') {
                 if ($refundReason = $this->refundReasonService->getRefundReason($this->configurationService->getContext())) {
                     $this->refundService->createRefund($parcel, $refundReason);
                 }

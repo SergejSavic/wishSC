@@ -36,7 +36,7 @@ class RefundService implements RefundServiceInterface
         $wishOrder = $this->wishProxy->getOrderById($parcel->getExternalOrderId());
         $refund =  new Refund();
         $refund->setRefundReason($refundReason);
-        $refund->setRefundReasonNote('');
+        $refund->setRefundReasonNote('Parcel canceled');
 
         $this->wishProxy->createRefund($refund, $wishOrder->getId());
     }

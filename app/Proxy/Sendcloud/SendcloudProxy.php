@@ -4,6 +4,7 @@ namespace App\Proxy\Sendcloud;
 
 use App\DTO\Sendcloud\Parcel;
 use App\DTO\Sendcloud\SenderAddress;
+use JsonException;
 use SendCloud\BusinessLogic\Proxy;
 use SendCloud\Infrastructure\Utility\Exceptions\HttpAuthenticationException;
 use SendCloud\Infrastructure\Utility\Exceptions\HttpCommunicationException;
@@ -16,36 +17,17 @@ use SendCloud\Infrastructure\Utility\Exceptions\HttpRequestException;
 class SendcloudProxy extends Proxy
 {
     /**
-     * Returns parcel by order number
-     *
-     * @param string $orderNumber
-     *
-     * @return Parcel|null
-     * @throws HttpAuthenticationException
-     * @throws HttpCommunicationException
-     * @throws HttpRequestException
-     */
-    public function getParcelByOrderNumber(string $orderNumber): ?Parcel
-    {
-        $response = json_decode(
-            $this->call('GET', "parcels?order_number=$orderNumber")->getBody(),
-            true);
-
-        return !empty($response['parcels']) ? Parcel::fromArray($response['parcels'][0]) : null;
-    }
-
-    /**
      * @return SenderAddress[]|null
      * @throws HttpAuthenticationException
      * @throws HttpCommunicationException
      * @throws HttpRequestException
+     * @throws JsonException
      */
     public function getSenderAddresses(): ?array
     {
-        $response = json_decode(
-            $this->call('GET', "user/addresses/sender")->getBody(),
-            true);
+        $response = $this->call('GET', 'user/addresses/sender');
+        $response = json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
-        return !empty($response['sender_addresses']) ? SenderAddress::fromBatch($response['sender_addresses']) : null;
+        return isset($response['sender_addresses']) ? SenderAddress::fromBatch($response['sender_addresses']) : [];
     }
 }

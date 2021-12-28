@@ -99,7 +99,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->singleton(WishAuthProxyInterface::class, AuthProxy::class);
         $this->app->singleton(WishProxyInterface::class, WishProxy::class);
-        $this->app->singleton(SendcloudProxy::class, SendcloudProxy::class);
+        $this->app->singleton(SendCloudProxyInterface::class, SendcloudProxy::class);
     }
 
     /**
