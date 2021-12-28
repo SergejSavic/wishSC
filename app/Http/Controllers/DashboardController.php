@@ -41,7 +41,6 @@ class DashboardController extends MiddlewareDashboardController
      */
     protected function getViewData(): array
     {
-        $this->configService->setContext('6193d76bd02eee3b2c11c3ef');
         $data = parent::getViewData();
         $data['configuration_url'] = $this->getConfigurationControllerUrl();
         $data['is_service_points_enabled'] = false;

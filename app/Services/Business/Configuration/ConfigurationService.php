@@ -92,4 +92,84 @@ class ConfigurationService extends MiddlewareConfigurationService
     {
         $this->configRepository->saveValue('WISH_GUID', $guid, $this->getContext());
     }
+
+    /**
+     * Gets sender address
+     *
+     * @return string|null
+     */
+    public function getSenderAddress(): ?string
+    {
+        return $this->configRepository->getValue('SENDER_ADDRESS', $this->getContext());
+    }
+
+    /**
+     * Sets sender address
+     *
+     * @param string $senderAddress
+     */
+    public function setSenderAddress(string $senderAddress): void
+    {
+        $this->configRepository->saveValue('SENDER_ADDRESS', $senderAddress, $this->getContext());
+    }
+
+    /**
+     * Gets shipment type
+     *
+     * @return string|null
+     */
+    public function getShipmentType(): ?string
+    {
+        return $this->configRepository->getValue('SHIPMENT_TYPE', $this->getContext());
+    }
+
+    /**
+     * Sets shipment type
+     *
+     * @param string $shipmentType
+     */
+    public function setShipmentType(string $shipmentType): void
+    {
+        $this->configRepository->saveValue('SHIPMENT_TYPE', $shipmentType, $this->getContext());
+    }
+
+    /**
+     * Gets country
+     *
+     * @return string|null
+     */
+    public function getCountry(): ?string
+    {
+        return $this->configRepository->getValue('COUNTRY', $this->getContext());
+    }
+
+    /**
+     * Sets country
+     *
+     * @param string $country
+     */
+    public function setCountry(string $country): void
+    {
+        $this->configRepository->saveValue('COUNTRY', $country, $this->getContext());
+    }
+
+    /**
+     * Gets hs code
+     *
+     * @return string|null
+     */
+    public function getHsCode(): ?string
+    {
+        return $this->configRepository->getValue('HS_CODE', $this->getContext());
+    }
+
+    /**
+     * Sets hs code
+     *
+     * @param string $hsCode
+     */
+    public function setHsCode(string $hsCode): void
+    {
+        $this->configRepository->saveValue('HS_CODE', $hsCode, $this->getContext());
+    }
 }
