@@ -51,5 +51,12 @@ interface UserRepositoryInterface
      * @return mixed
      */
     public function getAllContexts(): array;
+
+    /**
+     * Returns array of contexts which are inactive for more than 120 days
+     *
+     * @return array
+     */
+    public function getInactiveContexts(): array;
 }
 

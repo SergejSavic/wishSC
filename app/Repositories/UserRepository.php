@@ -8,6 +8,8 @@ use App\Models\WishUser;
 use DateInterval;
 use DateTime;
 use Exception;
+use SendCloud\MiddlewareComponents\Models\QueueItem;
+use SendCloud\MiddlewareComponents\Models\Repository\QueueItemRepository;
 
 /**
  * Class UserRepository
@@ -72,5 +74,19 @@ class UserRepository implements UserRepositoryInterface
     public function getAllContexts(): array
     {
         return WishUser::all('context')->pluck('context')->toArray() ?? [];
+    }
+
+    /**
+     * @inheritdoc
+     * @throws Exception
+     */
+    public function getInactiveContexts(): array
+    {
+        $currentTime = new DateTime('@' . time());
+        $earliestValidTime = $currentTime->sub(new DateInterval('P120D'));
+
+        return QueueItem::query()->where('lastUpdateTimestamp', '<', $earliestValidTime->getTimestamp())
+            ->pluck('context')
+            ->toArray();
     }
 }
