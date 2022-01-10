@@ -3,7 +3,7 @@
 
     <div class="sc-content-window-wrapper">
         <div class="sc-content-window" style="border: 0; box-shadow: 0 0 0 0;">
-            <h3 style="    font-weight: 500; font-size: 28px;">
+            <h3 style="font-weight: 500; font-size: 28px;">
                 {{__('wish.connect.title')}}
             </h3>
             <div class="sc-action-buttons-wrapper">

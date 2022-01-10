@@ -21,19 +21,16 @@ use App\DTO\Order\Order as WishOrder;
 use Carbon\Carbon;
 use SendCloud\BusinessLogic\Interfaces\OrderService as OrderServiceInterface;
 use SendCloud\Infrastructure\Logger\Logger;
-use SendCloud\Infrastructure\ServiceRegister;
-use SendCloud\Infrastructure\Utility\Exceptions\HttpAuthenticationException;
 use SendCloud\Infrastructure\Utility\Exceptions\HttpCommunicationException;
 use SendCloud\Infrastructure\Utility\Exceptions\HttpRequestException;
-use SendCloud\BusinessLogic\Proxy;
 
 /**
  * Class OrderService
- * @package App\Services\Business\Orders\Sendcloud
+ * @package App\Services\Business\Tracking\Sendcloud
  */
 class OrderService implements OrderServiceInterface
 {
-    const WISH_ORDER_STATE = 'APPROVED';
+    private const WISH_ORDER_STATE = 'APPROVED';
 
     /** * fulfillment statuses handled by Wish */
     private array $fulfillmentStatuses = ['FULFILLED_BY_WISH', 'FULFILLED_BY_STORE', 'ADVANCED_LOGISTICS'];
@@ -83,7 +80,7 @@ class OrderService implements OrderServiceInterface
         SendcloudProxy $sendcloudProxy,
         RefundServiceInterface $refundService,
         RefundReasonServiceInterface $refundReasonService,
-        ShipmentServiceInterface $shippingService
+        ShipmentServiceInterface $shippingService,
     )
     {
         $this->proxy = $proxy;
@@ -107,7 +104,8 @@ class OrderService implements OrderServiceInterface
             foreach ($orders as $order) {
 
                 if (!$this->isContained($order->getFulfillmentOrderTypes(), $this->fulfillmentStatuses)) {
-                    $ids[] = $order->getId();
+                    // saving as key value pairs to enable faster search through array
+                    $ids[$order->getId()] = $order->getId();
                 }
             }
         } catch (Exception $e) {
@@ -137,7 +135,9 @@ class OrderService implements OrderServiceInterface
             }
 
             foreach ($wishOrders as $wishOrder) {
-                $orders[] = $this->transformOrder($wishOrder);
+                if (array_key_exists($wishOrder->getId(), $batchOrderIds)) {
+                    $orders[] = $this->transformOrder($wishOrder);
+                }
             }
         } catch (Exception $e) {
             Logger::logWarning('Error occurred while fetching all orders by IDs: ' . $e->getMessage());
@@ -155,7 +155,9 @@ class OrderService implements OrderServiceInterface
         try {
             $wishOrder = $this->proxy->getOrderById($orderId);
 
-            return $this->transformOrder($wishOrder);
+            if ($wishOrder !== null) {
+                return $this->transformOrder($wishOrder);
+            }
         } catch (Exception $exception) {
             Logger::logWarning("Order with id $orderId couldn't fetch: {$exception->getMessage()}", 'Integration');
         }
@@ -181,15 +183,11 @@ class OrderService implements OrderServiceInterface
 
     /**
      * @inheritdoc
-     * @throws HttpRequestException
-     * @throws HttpAuthenticationException
-     * @throws HttpCommunicationException
-     * @throws JsonException
      */
     public function updateOrderStatus(Order $order): void
     {
-        $parcel = Parcel::fromArray($this->getProxy()->getParcelById($order->getSendCloudParcelId()));
         try {
+            $parcel = Parcel::fromArray($this->sendcloudProxy->getParcelById($order->getSendCloudParcelId()));
             if ($order->getSendCloudStatus() === 'Cancelled' || $order->getSendCloudStatus() === 'Cancellation requested') {
                 if ($refundReason = $this->refundReasonService->getRefundReason($this->configurationService->getContext())) {
                     $this->refundService->createRefund($parcel, $refundReason);
@@ -219,6 +217,9 @@ class OrderService implements OrderServiceInterface
      *
      * @param WishOrder $wishOrder
      * @return Order
+     * @throws HttpCommunicationException
+     * @throws HttpRequestException
+     * @throws JsonException
      */
     private function transformOrder(WishOrder $wishOrder): Order
     {
@@ -229,6 +230,11 @@ class OrderService implements OrderServiceInterface
         $sendcloudOrder->setCustomerName($wishOrder->getFullAddress()->getShippingDetail()->getName());
         $sendcloudOrder->setCountryCode($wishOrder->getFullAddress()->getShippingDetail()->getCountryCode());
         $sendcloudOrder->setToState($wishOrder->getFullAddress()->getShippingDetail()->getState());
+
+        $sendcloudOrder->setEmail('');
+        $sendcloudOrder->setHouseNumber('');
+        $sendcloudOrder->setCompanyName('');
+
         $sendcloudOrder->setCity($wishOrder->getFullAddress()->getShippingDetail()->getCity());
         $sendcloudOrder->setPostalCode($wishOrder->getFullAddress()->getShippingDetail()->getZipcode());
         $sendcloudOrder->setAddress($wishOrder->getFullAddress()->getShippingDetail()->getStreetAddress1());
@@ -237,17 +243,23 @@ class OrderService implements OrderServiceInterface
         $product = $this->proxy->getProduct($wishOrder->getProductInformation()->getId());
         $variation = $this->getVariationById($product, $wishOrder->getProductInformation()->getVariationId());
         $sendcloudOrder->setWeight(
-            (string)(($variation->getLogisticsDetails()->getWeight() / 1000) * $wishOrder->getOrderPayment()->getGeneralPaymentDetails()->getProductQuantity())
+            $variation !== null ? (string)(($variation->getLogisticsDetails()->getWeight() / 1000) * $wishOrder->getOrderPayment()->getGeneralPaymentDetails()->getProductQuantity()) : 0
         );
         $sendcloudOrder->setTotalValue(
-            (string)($this->getValue($wishOrder) * $wishOrder->getOrderPayment()->getGeneralPaymentDetails()->getProductQuantity())
+            (string)round(($this->getValue($wishOrder) * $wishOrder->getOrderPayment()->getGeneralPaymentDetails()->getProductQuantity()), 2)
         );
+        $warehouseMapping = json_decode($this->configurationService->getWarehouseMapping(), true, 512, JSON_THROW_ON_ERROR);
+        $senderAddress = $warehouseMapping[$wishOrder->getWarehouseInformation()->getWarehouseId()];
+        $sendcloudOrder->setSenderAddress($senderAddress);
+        $sendcloudOrder->setCheckoutShippingName($this->setCheckoutShippingName($wishOrder));
+        $sendcloudOrder->setCustomsShipmentType((int)$this->configurationService->getShipmentType());
         $sendcloudOrder->setCustomsInvoiceNr($wishOrder->getId());
         $sendcloudOrder->setCurrency($wishOrder->getOrderPayment()->getGeneralPaymentDetails()->getPaymentTotal()->getCurrencyCode());
+        $sendcloudOrder->setCreatedAt($wishOrder->getReleasedAt());
         $sendcloudOrder->setUpdatedAt($wishOrder->getUpdatedAt());
         $sendcloudOrder->setStatusId($wishOrder->getState());
         $sendcloudOrder->setStatusName($wishOrder->getState());
-        $sendcloudOrder->setItems([$this->transformItems($wishOrder)]);
+        $sendcloudOrder->setItems([$this->transformItems($wishOrder, $variation)]);
 
         return $sendcloudOrder;
     }
@@ -257,16 +269,18 @@ class OrderService implements OrderServiceInterface
      * @throws HttpCommunicationException
      * @throws JsonException
      */
-    private function transformItems(WishOrder $order): OrderItem
+    private function transformItems(WishOrder $order, $variation): OrderItem
     {
         $sendCloudItem = new OrderItem();
-        $product = $this->proxy->getProduct($order->getProductInformation()->getId());
-        $variation = $this->getVariationById($product, $order->getProductInformation()->getVariationId());
         $sendCloudItem->setDescription($order->getProductInformation()->getName());
-        $sendCloudItem->setHsCode($variation->getLogisticsDetails()->getCustomsHsCode());
+        $hsCode = $variation->getLogisticsDetails()->getCustomsHsCode();
+        $hsCode = ($hsCode !== null && $hsCode !== '') ? $hsCode : $this->configurationService->getHsCode();
+        $sendCloudItem->setHsCode($hsCode);
         $sendCloudItem->setQuantity($order->getOrderPayment()->getGeneralPaymentDetails()->getProductQuantity());
         $sendCloudItem->setWeight((string)$variation->getLogisticsDetails()->getWeight());
-        $sendCloudItem->setOriginCountry($variation->getLogisticsDetails()->getOriginCountry());
+        $country = $variation->getLogisticsDetails()->getOriginCountry();
+        $country = ($country !== null && $country !== '') ? $country : $this->configurationService->getCountry();
+        $sendCloudItem->setOriginCountry($country);
         $sendCloudItem->setValue(round($this->getValue($order), 2));
         $sendCloudItem->setSku($order->getProductInformation()->getSku());
         $sendCloudItem->setProductId($order->getProductInformation()->getId());
@@ -292,19 +306,40 @@ class OrderService implements OrderServiceInterface
     }
 
     /**
-     * @param Product $product
+     * @param Product|null $product
      * @param string $variationId
      * @return Variation|null
      */
-    private function getVariationById(Product $product, string $variationId): ?Variation
+    private function getVariationById(?Product $product, string $variationId): ?Variation
     {
-        foreach ($product->getVariations() as $variation) {
-            if ($variation->getId() === $variationId) {
-                return $variation;
+        if ($product !== null) {
+            foreach ($product->getVariations() as $variation) {
+                if ($variation->getId() === $variationId) {
+                    return $variation;
+                }
             }
         }
 
         return null;
+    }
+
+    /**
+     * @param WishOrder $wishOrder
+     * @return string
+     */
+    private function setCheckoutShippingName(WishOrder $wishOrder): string
+    {
+        $checkoutShippingName = '';
+
+        foreach ($wishOrder->getFulfillmentOrderTypes() as $index => $orderType) {
+            $checkoutShippingName .= $orderType;
+
+            if ($index !== 0 && $index !== count($wishOrder->getFulfillmentOrderTypes()) - 1) {
+                $checkoutShippingName .= ',';
+            }
+        }
+
+        return $checkoutShippingName;
     }
 
     /**
@@ -323,15 +358,5 @@ class OrderService implements OrderServiceInterface
         }
 
         return $response;
-    }
-
-    /**
-     * Gets proxy class instance.
-     *
-     * @return Proxy
-     */
-    private function getProxy(): Proxy
-    {
-        return ServiceRegister::getService(Proxy::CLASS_NAME);
     }
 }

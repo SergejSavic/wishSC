@@ -9,7 +9,7 @@ use SendCloud\Infrastructure\Exceptions\InvalidConfigurationException;
 
 class TokenService implements WishTokenServiceInterface
 {
-    const GRANT_TYPE = 'refresh_token';
+    private const GRANT_TYPE = 'refresh_token';
 
     /**
      * @var WishAuthServiceInterface

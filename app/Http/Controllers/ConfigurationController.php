@@ -5,11 +5,11 @@ namespace App\Http\Controllers;
 use App\Contracts\Services\AutomaticCancellationServiceInterface;
 use App\Contracts\Services\RefundReasonServiceInterface;
 use App\Exceptions\RequestPayloadNotValid;
+use App\Exceptions\UnauthorizedException;
 use App\Services\Business\Configuration\ConfigurationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use SendCloud\Infrastructure\Interfaces\Required\Configuration;
-use SendCloud\MiddlewareComponents\Models\Repository\ConfigRepository;
 
 /**
  * Class ConfigurationController
@@ -49,7 +49,7 @@ class ConfigurationController
     }
 
     /**
-     * Returns sender address, shipment type, country, hs code, automatic cancellation and refund reason code if exists based on context
+     * Returns warehouse mapping, shipment type, country, hs code, automatic cancellation and refund reason code if exists based on context
      *
      * @return JsonResponse
      */
@@ -57,7 +57,7 @@ class ConfigurationController
     {
         $refundReasonCode = $this->refundReasonService->getRefundReason($this->configurationService->getContext());
         $automaticCancellation = $this->automaticCancellationService->isAutomaticCancellationEnabled($this->configurationService->getContext());
-        $senderAddress = $this->configurationService->getSenderAddress();
+        $warehouseMapping = $this->configurationService->getWarehouseMapping();
         $shipmentType = $this->configurationService->getShipmentType();
         $country = $this->configurationService->getCountry();
         $hsCode = $this->configurationService->getHsCode();
@@ -65,7 +65,7 @@ class ConfigurationController
         return response()->json([
             'refund' => $refundReasonCode,
             'automaticCancellation' => $automaticCancellation,
-            'senderAddress' => $senderAddress,
+            'warehouses' => $warehouseMapping,
             'shipmentType' => $shipmentType,
             'country' => $country,
             'hsCode' => $hsCode
@@ -73,11 +73,12 @@ class ConfigurationController
     }
 
     /**
-     * Save refund reason code for specific context
+     * Verifies request and saves values
      *
      * @param Request $request
      * @return JsonResponse
      * @throws RequestPayloadNotValid
+     * @throws UnauthorizedException
      */
     public function post(Request $request): JsonResponse
     {
@@ -87,8 +88,8 @@ class ConfigurationController
         return response()->json([
             'refund' => $request->get('refund'),
             'automaticCancellation' => filter_var($request->get('automaticCancellation'), FILTER_VALIDATE_BOOLEAN),
-            'senderAddress' => $request->get('senderAddress'),
             'shipmentType' => $request->get('shipmentType'),
+            'warehouses' => $request->get('warehouses'),
             'country' => $request->get('country'),
             'hsCode' => $request->get('hsCode')
         ]);
@@ -102,7 +103,7 @@ class ConfigurationController
      */
     private function verifyPayload(Request $request): void
     {
-        $expectedKeys = ['senderAddress', 'shipmentType', 'country', 'hsCode', 'refund', 'automaticCancellation'];
+        $expectedKeys = ['warehouses', 'shipmentType', 'country', 'hsCode', 'refund', 'automaticCancellation'];
 
         $this->verifyArrayKeys($expectedKeys, $request);
     }
@@ -124,11 +125,12 @@ class ConfigurationController
     }
 
     /**
-     * Saves sender address, shipment type, country, hs code, automatic cancellation and refund reason code if context exists
+     * Saves warehouse mapping, shipment type, country, hs code, automatic cancellation and refund reason code if context exists
      *
      * @param Request $request
      * @param string|null $context
      * @return void
+     * @throws UnauthorizedException
      */
     private function saveValues(Request $request, ?string $context): void
     {
@@ -146,9 +148,9 @@ class ConfigurationController
             $context
         );
 
-        $this->configurationService->setSenderAddress($request->get('senderAddress'));
-        $this->configurationService->setShipmentType($request->get('shipmentType'));
-        $this->configurationService->setCountry($request->get('country'));
-        $this->configurationService->setHsCode($request->get('hsCode'));
+        $this->configurationService->setWarehouseMapping($request->get('warehouses'), $context);
+        $this->configurationService->setShipmentType($request->get('shipmentType'), $context);
+        $this->configurationService->setCountry($request->get('country'), $context);
+        $this->configurationService->setHsCode($request->get('hsCode'), $context);
     }
 }

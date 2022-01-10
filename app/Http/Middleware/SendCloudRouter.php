@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Contracts\Services\Auth\WishAuthServiceInterface;
+use App\Services\Business\Router\RouterService;
 use Closure;
 use Illuminate\Http\Request;
 use SendCloud\BusinessLogic\Interfaces\ConnectService;
@@ -66,7 +67,12 @@ class SendCloudRouter extends MiddlewareSendCloudRouter
         }
 
         if ($currentAction !== $permittedAction) {
-            return redirect()->route($permittedAction, $this->getAdditionalParameters());
+            if ($permittedAction === self::SYNC) {
+                return redirect()->route($permittedAction, $this->getAdditionalParameters());
+            }
+            $route = substr($permittedAction, strpos($permittedAction, ".") + 1);
+
+            return redirect(RouterService::getRedirectUrl($route, $this->getAdditionalParameters()));
         }
 
         return $next($this->request);
@@ -105,11 +111,7 @@ class SendCloudRouter extends MiddlewareSendCloudRouter
      */
     private function isUserAuthenticated(): bool
     {
-        if ($this->wishAuthService->getCurrentUser() === null ||
-            $this->wishAuthService->getCurrentUser()->accessToken === null) {
-            return false;
-        }
-
-        return true;
+        return !($this->wishAuthService->getCurrentUser() === null ||
+            $this->wishAuthService->getCurrentUser()->accessToken === null);
     }
 }

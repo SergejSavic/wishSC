@@ -1,66 +1,107 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+![alt tag](https://sendcloud.com/wp-content/uploads/2017/02/New-Logo-mini.png)
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+# Sendcloud Wish Application
 
-## About Laravel
+### Setting up application
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+To set up application on the server there are few steps that should be done:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- Step 1: Clone repository to desired location on server
+    ```
+    git clone git@gitlab.com:sendcloud/logeecom/wish.git
+    ```
+- Step 2: Give write privileges to www user for `./storage` and `./bootstrap/cache`
+  folders. Run following command (`www-data` is used as www user):
+    ```
+    sudo chown -R www-data:www-data ./storage/ ./bootstrap/cache/
+    ```
+- Step 3: Create `.env` from one of the example .env files included in project and fill in
+  configuration values.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+|      Variable       |  Staging environment (connected to staging git branch)  |           Production (connected to master git branch)            |
+|:-------------------:|:-------------------------------------------------------:|:----------------------------------------------------------------:|
+|    *APPLICATION*    |                                                         |                                                                  |
+|       APP_KEY       |       Logeecom will provide for each integration.       |          Logeecom will provide it for each integration.          |
+|      APP_NAME       |                      SendcloudWish                      |                          SendcloudWish                           |
+|       APP_ENV       |                         staging                         |                            production                            |
+|      APP_DEBUG      |                          false                          |                              false                               |
+|       APP_URL       | Sendcloud sets URL (e.g. https://wish.ws.sendcloud.com) | Sendcloud sets URL (e.g. https://wish.integration.sendcloud.com) |
+|     ASSETS_URL      |     https://dev-wish.s3.eu-central-1.amazonaws.com/     |         https://prod-wish.s3.eu-central-1.amazonaws.com/         |
+|     *DATABASE*      |                                                         |                                                                  |
+|    DB_CONNECTION    |                          mysql                          |                              mysql                               |
+|       DB_HOST       |             Sendcloud sets (database host)              |                  Sendcloud sets (database host)                  |
+|       DB_PORT       |             Sendcloud sets (database port)              |                  Sendcloud sets (database port)                  |
+|     DB_DATABASE     |             Sendcloud sets (database name)              |                  Sendcloud sets (database name)                  |
+|     DB_USERNAME     |           Sendcloud sets (database username)            |                Sendcloud sets (database username)                |
+|     DB_PASSWORD     |           Sendcloud sets (database password)            |                Sendcloud sets (database password)                |
+|       *WISH*        |                                                         |                                                                  |
+|    WISH_AUTH_URL    |           https://merchant.wish.com/v3/oauth            |                https://merchant.wish.com/v3/oauth                |
+|    WISH_API_URL     |            https://merchant.wish.com/api/v3             |                 https://merchant.wish.com/api/v3                 |
+| WISH_CLIENT_SECRET  |                        [secret]                         |                             [secret]                             |
+|   WISH_CLIENT_ID    |                        [secret]                         |                             [secret]                             |
+|     *SENDCLOUD*     |                                                         |                                                                  |
+| SENDCLOUD_PANEL_URL |             https://panel.dev.sendcloud.sc/             |                   https://panel.sendcloud.sc/                    |      
+|      *DOCKER*       |                                                         |                                                                  |
+|    CONTAINER_APP    |     Container type need ( app / scheduler / queue )     |         Container type need ( app / scheduler / queue )          |
+|   *FILE STORAGE*    |                                                         |                                                                  |
+|  FILESYSTEM_DRIVER  |                           s3                            |                                s3                                |
+|      *LOGGING*      |                                                         |                                                                  |
+| SENTRY_LARAVEL_DSN  |                     Sendcloud sets                      |                          Sendcloud sets                          |
+|       *OTHER*       |                                                         |                                                                  |
+|    CACHE_DRIVER     |                          file                           |                               file                               |
+|   SESSION_DRIVER    |                        database                         |                             database                             |
+|  SESSION_LIFETIME   |                           120                           |                               120                                |
+|     LOG_CHANNEL     |                    production_stack                     |                         production_stack                         |
 
-## Learning Laravel
+### Build docker image (CI & CD)
+After initial app setup it will be possible to build app docker image based on ./app.Dockerfile by executing:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+```
+docker build -t sendcloud/wish -f app.Dockerfile \
+--build-arg SSH_KEY="$(cat ~/.ssh/id_rsa)" \
+.
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Building application docker image requires access to Sendcloud private repositories for integration core and middleware components. SSH_KEY build argument is used for this reason. Previous build command assumes standard git and ssh setup where ssh key is read from ~/.ssh/id_rsa file.
 
-## Laravel Sponsors
+The web server image can be built in similar fashion.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+```
+docker build -t sendcloud/wish-nginx -f web.Dockerfile .
+```
 
-### Premium Partners
+### Run docker image
+The template for running docker environment is outlined in a .docker-compose file.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[CMS Max](https://www.cmsmax.com/)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
-- **[Romega Software](https://romegasoftware.com)**
+## Development (integration testing) docker setup
 
-## Contributing
+For development and integration testing purposes docker-compose.yml file is created that will build and run docker image automatically together with mysql
+server image. To build and start all docker images required for wish app (php laravel app with apache server and mysql db) do following:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- Copy mysql.env.example file to mysq.env and setup same credentials and DB name as one in your .env file
+- Set dev_stack for LOG_CHANNEL in .env file
+- Run following command to build images and start application on localhost
 
-## Code of Conduct
+ ```
+export SSH_KEY="$(cat ~/.ssh/id_rsa)"; \
+docker-compose build
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Start ngrok with tls option
 
-## Security Vulnerabilities
+```
+ngrok http 443
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Replace APP_URL and ASSET_URL in docker-compose.yml with the ngrok https urls.
 
-## License
+To start the app run:
+```
+docker-compose up -d
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Important notice: Certificates in the ./certs directory are self-signed generated certificates used for development
+purposes only.
+
+## Running core unit tests
+./vendor/bin/phpunit --configuration ./tests/phpunit.xml --testsuite Core

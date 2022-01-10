@@ -1,20 +1,23 @@
 <input id="sc-config-endpoint-url" type="hidden" name="scConfigEndpointUrl" value="{{$configuration_url}}"/>
 <div class="sc-content-window" data-tab-id="1">
     <form name="configuration" novalidate class="sc-form">
-        <h3>{{__('wish.configure.warehouse.mapping.title')}}</h3>
-        <p>{{__('wish.configure.warehouse.mapping.description')}}</p>
-        <div class="sc-warehouse-wrapper sc-form-group-wrapper">
-            <div class="sc-form-row">
-                <label for="sender-address">
-                    {{__('wish.configure.warehouse.mapping.label')}}:
-                </label>
-                <select name="senderAddress" id="sender-address" required>
-                    @foreach($senderAddresses as $senderAddress)
-                        <option value="{{$senderAddress['value']}}">{{$senderAddress['label']}}</option>
-                    @endforeach
-                </select>
+
+        @if ($warehouses && $senderAddresses)
+            <h3>{{__('wish.configure.warehouse.mapping.title')}}</h3>
+            <p>{{__('wish.configure.warehouse.mapping.description')}}</p>
+            <div class="sc-warehouse-wrapper sc-form-group-wrapper">
+                @foreach($warehouses as $warehouse)
+                    <div class="sc-form-row">
+                        <label for="{{$warehouse->getId()}}">{{$warehouse->getName()}}:</label>
+                        <select name="{{$warehouse->getId()}}" id="{{$warehouse->getId()}}" class="warehouse-mapping" required>
+                            @foreach($senderAddresses as $senderAddresse)
+                                <option value="{{$senderAddresse['value']}}">{{$senderAddresse['label']}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                @endforeach
             </div>
-        </div>
+        @endif
 
         <h3>{{__('wish.configure.international.shipping.mapping.title')}}</h3>
         <p>{{__('wish.configure.international.shipping.mapping.description')}}</p>
@@ -24,8 +27,8 @@
                     {{__('wish.configure.international.shipping.mapping.shipment_type.label')}}:
                 </label>
                 <select name="shipmentType" id="shipment-type" required>
-                    @foreach($senderAddresses as $senderAddress)
-                        <option value="{{$senderAddress['value']}}">{{$senderAddress['label']}}</option>
+                    @foreach($shipmentTypes as $shipmentType)
+                        <option value="{{$shipmentType['value']}}">{{$shipmentType['label']}}</option>
                     @endforeach
                 </select>
             </div>
@@ -35,8 +38,8 @@
                     {{__('wish.configure.international.shipping.mapping.country.label')}}:
                 </label>
                 <select name="country" id="country" required>
-                    @foreach($senderAddresses as $senderAddress)
-                        <option value="{{$senderAddress['value']}}">{{$senderAddress['label']}}</option>
+                    @foreach($countries as $country)
+                        <option value="{{$country['value']}}">{{$country['label']}}</option>
                     @endforeach
                 </select>
             </div>
@@ -45,7 +48,7 @@
                 <label for="hs-code">
                     {{__('wish.configure.international.shipping.mapping.hs_code.label')}}:
                 </label>
-                <input name="hsCode" id="hs-code"/>
+                <input type="text" name="hsCode" id="hs-code" required />
             </div>
         </div>
 
@@ -61,7 +64,7 @@
             </div>
         </div>
 
-        <div id="second_configuration" class="sc-hidden">
+        <div id="second_configuration" class="">
             <h3>{{__('wish.configure.return.type.title')}}</h3>
             <p>{{__('wish.configure.cancel.type.description')}}</p>
             <div class="sc-warehouse-wrapper sc-form-group-wrapper">
@@ -70,7 +73,9 @@
                         {{__('wish.configure.return.type.label')}}:
                     </label>
                     <select name="refund" id="refund" required>
-                        <option value="{{$refundReason['code']}}">{{$refundReason['label']}}</option>
+                        @foreach($refundReasons as $refundReason)
+                            <option value="{{$refundReason}}">{{$refundReason}}</option>
+                        @endforeach
                     </select>
                 </div>
             </div>

@@ -10,6 +10,7 @@ interface WishAuthServiceInterface
     /**
      * Get current user
      *
+     * @param bool $forceLoad
      * @return WishUser|null
      */
     public function getCurrentUser(bool $forceLoad = false): ?WishUser;

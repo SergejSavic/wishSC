@@ -7,6 +7,7 @@ use App\DTO\AuthInfo\AuthInfo;
 use App\Exceptions\RequestPayloadNotValid;
 use App\Services\Business\Authentication\AuthService;
 use App\Services\Business\Configuration\ConfigurationService;
+use App\Services\Business\Router\RouterService;
 use SendCloud\Infrastructure\Logger\Logger;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,7 +20,7 @@ use Exception;
  */
 class AuthController extends BaseController
 {
-    private const DASHBOARD_ROUTE = 'sendcloud.dashboard';
+    private const DASHBOARD_ROUTE = 'dashboard';
     private const GRANT_TYPE = 'authorization_code';
 
     /**
@@ -64,13 +65,14 @@ class AuthController extends BaseController
                 $this->authService->createNewUser($authInfo, $this->configService->getContext());
             }
 
-            return redirect()->route(
+            return redirect(RouterService::getRedirectUrl(
                 self::DASHBOARD_ROUTE,
                 [
                     'context' => $this->configService->getContext(),
                     'guid' => $this->configService->getGuid()
-                ]
+                ])
             );
+
         } catch (Exception $e) {
             Logger::logWarning('Wish authorization failed! ' . $e->getMessage());
             return response()->view('errors.401', ['exception' => $e]);
@@ -108,10 +110,10 @@ class AuthController extends BaseController
     private function getAuthInfo(Request $request): AuthInfo
     {
         try {
-            return $this->authProxy->getAuthInfo($request->get('code'), 'https://oauth.pstmn.io/v1/callback', self::GRANT_TYPE);
+            return $this->authProxy->getAuthInfo($request->get('code'), config('app.url') . '/callback', self::GRANT_TYPE);
 
         } catch (Exception $e) {
-            Logger::logWarning('Incorrect authorization code!', 'Integration');
+            Logger::logWarning('Incorrect authorization code!'. $e->getMessage(), 'Integration');
 
             throw new UnauthorizedException('Incorrect authorization code!', 401);
         }

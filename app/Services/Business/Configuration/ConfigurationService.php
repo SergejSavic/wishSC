@@ -2,6 +2,8 @@
 
 namespace App\Services\Business\Configuration;
 
+use App\Exceptions\UnauthorizedException;
+use JsonException;
 use SendCloud\MiddlewareComponents\Services\Core\Business\ConfigurationService as MiddlewareConfigurationService;
 
 /**
@@ -94,26 +96,6 @@ class ConfigurationService extends MiddlewareConfigurationService
     }
 
     /**
-     * Gets sender address
-     *
-     * @return string|null
-     */
-    public function getSenderAddress(): ?string
-    {
-        return $this->configRepository->getValue('SENDER_ADDRESS', $this->getContext());
-    }
-
-    /**
-     * Sets sender address
-     *
-     * @param string $senderAddress
-     */
-    public function setSenderAddress(string $senderAddress): void
-    {
-        $this->configRepository->saveValue('SENDER_ADDRESS', $senderAddress, $this->getContext());
-    }
-
-    /**
      * Gets shipment type
      *
      * @return string|null
@@ -127,9 +109,15 @@ class ConfigurationService extends MiddlewareConfigurationService
      * Sets shipment type
      *
      * @param string $shipmentType
+     * @param string|null $context
+     * @throws UnauthorizedException
      */
-    public function setShipmentType(string $shipmentType): void
+    public function setShipmentType(string $shipmentType, ?string $context): void
     {
+        if (empty($context)) {
+            throw new UnauthorizedException();
+        }
+
         $this->configRepository->saveValue('SHIPMENT_TYPE', $shipmentType, $this->getContext());
     }
 
@@ -147,9 +135,15 @@ class ConfigurationService extends MiddlewareConfigurationService
      * Sets country
      *
      * @param string $country
+     * @param string|null $context
+     * @throws UnauthorizedException
      */
-    public function setCountry(string $country): void
+    public function setCountry(string $country, ?string $context): void
     {
+        if (empty($context)) {
+            throw new UnauthorizedException();
+        }
+
         $this->configRepository->saveValue('COUNTRY', $country, $this->getContext());
     }
 
@@ -167,9 +161,38 @@ class ConfigurationService extends MiddlewareConfigurationService
      * Sets hs code
      *
      * @param string $hsCode
+     * @param string|null $context
+     * @throws UnauthorizedException
      */
-    public function setHsCode(string $hsCode): void
+    public function setHsCode(string $hsCode, ?string $context): void
     {
+        if (empty($context)) {
+            throw new UnauthorizedException();
+        }
+
         $this->configRepository->saveValue('HS_CODE', $hsCode, $this->getContext());
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getWarehouseMapping(): ?string
+    {
+        return $this->configRepository->getValue('WAREHOUSE_MAPPING', $this->getContext());
+    }
+
+    /**
+     * @param string $mapping
+     * @param string|null $context
+     * @return void
+     * @throws UnauthorizedException
+     */
+    public function setWarehouseMapping(string $mapping, ?string $context): void
+    {
+        if (empty($context)) {
+            throw new UnauthorizedException();
+        }
+
+        $this->configRepository->saveValue('WAREHOUSE_MAPPING', $mapping, $this->getContext());
     }
 }

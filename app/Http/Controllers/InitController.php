@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\RequestPayloadNotValid;
 use App\Services\Business\Configuration\ConfigurationService;
+use App\Services\Business\Router\RouterService;
 use Illuminate\Http\Request;
 use SendCloud\Infrastructure\Logger\Logger;
 use Exception;
@@ -19,7 +20,7 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class InitController extends BaseController
 {
-    private const DASHBOARD_ROUTE = 'sendcloud.welcome';
+    private const WELCOME_ROUTE = 'welcome';
 
     /**
      * InitController constructor.
@@ -43,13 +44,14 @@ class InitController extends BaseController
             $this->validateSendCloudParameters($request);
             $this->initializeApplication();
 
-            return redirect()->route(
-                self::DASHBOARD_ROUTE,
+            return redirect(RouterService::getRedirectUrl(
+                self::WELCOME_ROUTE,
                 [
                     'context' => $this->configService->getContext(),
                     'guid' => $this->configService->getGuid()
-                ]
+                ])
             );
+
         } catch (Exception $e) {
             Logger::logWarning('Connection failed! ' . $e->getMessage());
             throw new UnauthorizedException('Invalid credentials for Sendcloud user.', 401);

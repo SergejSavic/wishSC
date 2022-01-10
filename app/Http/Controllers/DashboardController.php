@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Contracts\Orders\Countries\CountryCodesInterface;
+use App\Contracts\Orders\Shipment\ShipmentTypesInterface;
 use App\Contracts\Proxy\WishProxyInterface;
+use App\DTO\Warehouse\Warehouse;
 use App\Proxy\Sendcloud\SendcloudProxy;
 use JsonException;
 use SendCloud\BusinessLogic\Interfaces\Proxy;
@@ -19,7 +22,8 @@ use SendCloud\MiddlewareComponents\Controllers\Backend\DashboardController as Mi
  */
 class DashboardController extends MiddlewareDashboardController
 {
-    private const REFUND_REASON = 'UNABLE_TO_SHIP';
+    private const ITEM_RETURNED_TO_SENDER = 'ITEM_RETURNED_TO_SENDER';
+    private const ITEM_IS_DAMAGED = 'ITEM_IS_DAMAGED';
 
     /**
      * @var WishProxyInterface
@@ -38,14 +42,21 @@ class DashboardController extends MiddlewareDashboardController
     /**
      * @inheritDoc
      * @return array
+     * @throws HttpAuthenticationException
+     * @throws HttpCommunicationException
+     * @throws HttpRequestException
+     * @throws JsonException
      */
     protected function getViewData(): array
     {
         $data = parent::getViewData();
         $data['configuration_url'] = $this->getConfigurationControllerUrl();
-        $data['is_service_points_enabled'] = false;
+        $data['is_service_points_enabled'] = true;
         $data['senderAddresses'] = $this->getSenderAddressViewData();
-        $data['refundReason'] = self::REFUND_REASON;
+        $data['countries'] = $this->getCountries();
+        $data['shipmentTypes'] = $this->getShipmentTypes();
+        $data['refundReasons'] = $this->getRefundReasons();
+        $data['warehouses'] = $this->getWarehouses();
 
         return $data;
     }
@@ -85,7 +96,7 @@ class DashboardController extends MiddlewareDashboardController
      * @throws HttpAuthenticationException
      * @throws JsonException
      */
-    public function getSenderAddressViewData(): array
+    private function getSenderAddressViewData(): array
     {
         /** @var SendCloudProxy $sendCloudProxy */
         $sendCloudProxy = ServiceRegister::getService(Proxy::CLASS_NAME);
@@ -101,5 +112,53 @@ class DashboardController extends MiddlewareDashboardController
         }
 
         return $data;
+    }
+
+    /**
+     * @return array
+     */
+    private function getCountries(): array
+    {
+        $data = [];
+        foreach (CountryCodesInterface::CODES as $name => $iso2) {
+            $data[] = [
+                'value' => $iso2,
+                'label' => $name
+            ];
+        }
+
+        return $data;
+    }
+
+    /**
+     * @return array
+     */
+    private function getShipmentTypes(): array
+    {
+        $data = [];
+        foreach (ShipmentTypesInterface::SHIPMENT_TYPES as $shipmentType) {
+            $data[] = [
+                'value' => $shipmentType['value'],
+                'label' => $shipmentType['label']
+            ];
+        }
+
+        return $data;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getRefundReasons(): array
+    {
+        return [self::ITEM_RETURNED_TO_SENDER, self::ITEM_IS_DAMAGED];
+    }
+
+    /**
+     * @return Warehouse[]|null
+     */
+    private function getWarehouses(): ?array
+    {
+        return $this->wishProxy->getWarehouses();
     }
 }

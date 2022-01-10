@@ -14,6 +14,10 @@ class Carrier extends AbstractDTO
      * @var string|null
      */
     private ?string $code;
+    /**
+     * @var string|null
+     */
+    private ?string $name;
 
     /**
      * @return string|null
@@ -32,12 +36,29 @@ class Carrier extends AbstractDTO
     }
 
     /**
+     * @return string|null
+     */
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string|null $name
+     */
+    public function setName(?string $name): void
+    {
+        $this->name = $name;
+    }
+
+    /**
      * @inheritdoc
      */
     public function toArray(): array
     {
         return [
             'code' => $this->code,
+            'name' => $this->name
         ];
     }
 
@@ -48,6 +69,7 @@ class Carrier extends AbstractDTO
     {
         $carrier = new self();
         $carrier->code = self::getValue($data, 'code');
+        $carrier->name = self::getValue($data, 'name');
         return $carrier;
     }
 }

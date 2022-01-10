@@ -190,7 +190,6 @@ body {
 }
 
 .sc-warehouse-wrapper label {
-    min-width: 12%;
     display: table-cell;
     padding: 20px;
 }
@@ -202,7 +201,6 @@ body {
 }
 
 .sc-location-wrapper label {
-    min-width: 20%;
     display: table-cell;
     padding: 20px;
 }
@@ -213,7 +211,7 @@ select .sc-option-placeholder {
     width: 0;
 }
 
-select {
+select, input[type="text"] {
     font-size: 16px;
     font-family: sans-serif;
     font-weight: 700;

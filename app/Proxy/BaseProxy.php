@@ -131,7 +131,7 @@ abstract class BaseProxy
 
         $this->setParameters($parameters);
 
-        $endpoint = $endpoint . '?' . http_build_query($parameters);
+        $endpoint .= '?' . http_build_query($parameters);
         $formatEndpoint = $this->formatRequestUrl($endpoint);
 
         $response = $this->httpClient->request($method, $formatEndpoint, $headers, $bodyString);

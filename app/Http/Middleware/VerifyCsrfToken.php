@@ -22,6 +22,7 @@ class VerifyCsrfToken extends Middleware
         'api/v1/*',
         'v1/*',
         'init*',
+        'webhook*',
         '/auth'
     ];
 }

@@ -1,6 +1,7 @@
 (function (document, SendCloud) {
     document.addEventListener("DOMContentLoaded", function () {
         let configurationEndpointUrl = document.getElementById('sc-config-endpoint-url').value;
+        let warehouses = document.getElementsByClassName('warehouse-mapping');
         appendEventListeners();
         getConfiguration();
 
@@ -20,7 +21,6 @@
          */
         function getConfiguration() {
             removeValidationClass();
-
             let url = configurationEndpointUrl;
 
             SendCloud.Spinner.show();
@@ -69,17 +69,20 @@
 
             inputs['refund'] = null;
             inputs['automaticCancellation'] = false;
-            inputs['senderAddress'] = null;
+            inputs['warehouses'] = {};
             inputs['shipmentType'] = null;
             inputs['country'] = null;
             inputs['hsCode'] = null;
+            let arr = {};
 
             if (document.getElementById('enable-cancellation').checked) {
                 inputs['refund'] = document.getElementById('refund').value;
                 inputs['automaticCancellation'] = true;
             }
-
-            inputs['senderAddress'] = document.getElementById('sender-address').value;
+            for (let i = 0; i < warehouses.length; i++) {
+                arr[warehouses[i].id.toString()] = document.getElementById(warehouses[i].id).value;
+            }
+            inputs['warehouses'] = JSON. stringify(arr);
             inputs['shipmentType'] = document.getElementById('shipment-type').value;
             inputs['country'] = document.getElementById('country').value;
             inputs['hsCode'] = document.getElementById('hs-code').value;
@@ -94,18 +97,20 @@
          */
         function setFormElements(response) {
             let refund = document.getElementById('refund');
-            let senderAddress = document.getElementById('sender-address');
             let shipmentType = document.getElementById('shipment-type');
             let country = document.getElementById('country');
             let hsCode = document.getElementById('hs-code');
+            let warehouseMapping = JSON.parse(response['warehouses']);
 
             document.getElementById('enable-cancellation').checked = response['automaticCancellation'];
 
             if (response['refund'] !== null && response['refund'] !== "null") {
                 refund.value = response['refund'].toString();
             }
-            if (response['senderAddress'] !== null && response['senderAddress'] !== "null") {
-                senderAddress.value = response['senderAddress'].toString();
+            if (response['warehouses'] !== null && response['warehouses'] !== "null") {
+                for (let i = 0; i < warehouses.length; i++) {
+                    warehouses[i].value = warehouseMapping[warehouses[i].id];
+                }
             }
             if (response['shipmentType'] !== null && response['shipmentType'] !== "null") {
                 shipmentType.value = response['shipmentType'].toString();

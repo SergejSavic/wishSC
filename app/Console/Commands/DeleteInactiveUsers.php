@@ -19,14 +19,14 @@ class DeleteInactiveUsers
      *
      * @var string
      */
-    protected $signature = 'sendcloud:delete_inactive_users';
+    protected string $signature = 'sendcloud:delete_inactive_users';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Removes inactive users';
+    protected string $description = 'Removes inactive users';
 
     /**
      * Execute the console command.

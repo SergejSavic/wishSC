@@ -34,7 +34,7 @@ return [
         'auth_url' => env('WISH_AUTH_URL'),
         'api_url' => env('WISH_API_URL'),
         'client_secret' => env('WISH_CLIENT_SECRET', ''),
-        'client_id' => env('WISH_CLIENT_ID', ''),
+        'client_id' => env('WISH_CLIENT_ID', '')
     ],
     'sendcloud' => [
         'panel_url' => env('SENDCLOUD_PANEL_URL', 'https://panel.sendcloud.sc/')

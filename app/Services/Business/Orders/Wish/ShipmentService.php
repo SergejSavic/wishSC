@@ -2,6 +2,7 @@
 
 namespace App\Services\Business\Orders\Wish;
 
+use App\Contracts\Orders\Carriers\CarrierNamesInterface;
 use App\Contracts\Proxy\WishProxyInterface;
 use App\Contracts\Services\Orders\Wish\ShipmentServiceInterface;
 use App\DTO\Sendcloud\Parcel;
@@ -9,10 +10,12 @@ use App\DTO\Shipment\Tracking;
 
 /**
  * Class ShipmentService
- * @package App\Services\Business\Orders\Wish
+ * @package App\Services\Business\Tracking\Wish
  */
 class ShipmentService implements ShipmentServiceInterface
 {
+    private const SHIP_NOTE = 'Sendcloud';
+
     /**
      * @var WishProxyInterface
      */
@@ -46,10 +49,25 @@ class ShipmentService implements ShipmentServiceInterface
     {
         $tracking = new Tracking();
         $tracking->setOriginCountry($parcel->getCountry()->getIso2());
-        $tracking->setShippingProvider('');
+        $tracking->setShippingProvider($this->getShippingProvider($parcel));
         $tracking->setTrackingNumber($parcel->getTrackingNumber());
-        $tracking->setShipNote('Sendcloud');
+        $tracking->setShipNote(self::SHIP_NOTE);
 
         return $tracking;
+    }
+
+    /**
+     * @param Parcel $parcel
+     * @return string|null
+     */
+    private function getShippingProvider(Parcel $parcel): ?string
+    {
+        $shippingProvider = '';
+
+        if (array_key_exists($parcel->getCarrier()->getCode(), CarrierNamesInterface::WISH_CARRIERS_NAME_MAPPING)) {
+            $shippingProvider = CarrierNamesInterface::WISH_CARRIERS_NAME_MAPPING[$parcel->getCarrier()->getCode()];
+        }
+
+        return $shippingProvider;
     }
 }
