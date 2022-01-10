@@ -55,7 +55,7 @@ class ConfigurationController
      */
     public function get(): JsonResponse
     {
-        $refundReasonCode = $this->refundReasonService->getRefundReason($this->configurationService->getContext());
+        $cancelReasonCode = $this->refundReasonService->getCancelReason($this->configurationService->getContext());
         $automaticCancellation = $this->automaticCancellationService->isAutomaticCancellationEnabled($this->configurationService->getContext());
         $warehouseMapping = $this->configurationService->getWarehouseMapping();
         $shipmentType = $this->configurationService->getShipmentType();
@@ -63,7 +63,7 @@ class ConfigurationController
         $hsCode = $this->configurationService->getHsCode();
 
         return response()->json([
-            'refund' => $refundReasonCode,
+            'cancel' => $cancelReasonCode,
             'automaticCancellation' => $automaticCancellation,
             'warehouses' => $warehouseMapping,
             'shipmentType' => $shipmentType,
@@ -86,7 +86,7 @@ class ConfigurationController
         $this->saveValues($request, $this->configurationService->getContext());
 
         return response()->json([
-            'refund' => $request->get('refund'),
+            'cancel' => $request->get('cancel'),
             'automaticCancellation' => filter_var($request->get('automaticCancellation'), FILTER_VALIDATE_BOOLEAN),
             'shipmentType' => $request->get('shipmentType'),
             'warehouses' => $request->get('warehouses'),
@@ -103,7 +103,7 @@ class ConfigurationController
      */
     private function verifyPayload(Request $request): void
     {
-        $expectedKeys = ['warehouses', 'shipmentType', 'country', 'hsCode', 'refund', 'automaticCancellation'];
+        $expectedKeys = ['warehouses', 'shipmentType', 'country', 'hsCode', 'cancel', 'automaticCancellation'];
 
         $this->verifyArrayKeys($expectedKeys, $request);
     }
@@ -138,8 +138,8 @@ class ConfigurationController
             return;
         }
 
-        $this->refundReasonService->saveRefundReason(
-            $request->get('refund'),
+        $this->refundReasonService->saveCancelReason(
+            $request->get('cancel'),
             $context
         );
 

@@ -277,7 +277,7 @@ class OrderService implements OrderServiceInterface
         $hsCode = ($hsCode !== null && $hsCode !== '') ? $hsCode : $this->configurationService->getHsCode();
         $sendCloudItem->setHsCode($hsCode);
         $sendCloudItem->setQuantity($order->getOrderPayment()->getGeneralPaymentDetails()->getProductQuantity());
-        $sendCloudItem->setWeight((string)$variation->getLogisticsDetails()->getWeight());
+        $sendCloudItem->setWeight((string)$variation->getLogisticsDetails()->getWeight() / 1000);
         $country = $variation->getLogisticsDetails()->getOriginCountry();
         $country = ($country !== null && $country !== '') ? $country : $this->configurationService->getCountry();
         $sendCloudItem->setOriginCountry($country);

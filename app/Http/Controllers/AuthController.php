@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Contracts\Proxy\WishAuthProxyInterface;
 use App\DTO\AuthInfo\AuthInfo;
+use App\DTO\Order\Order;
 use App\Exceptions\RequestPayloadNotValid;
 use App\Services\Business\Authentication\AuthService;
 use App\Services\Business\Configuration\ConfigurationService;
+use App\Services\Business\Orders\Sendcloud\OrderService;
 use App\Services\Business\Router\RouterService;
 use SendCloud\Infrastructure\Logger\Logger;
 use Illuminate\Http\Request;
@@ -32,7 +34,7 @@ class AuthController extends BaseController
      * @var AuthService
      */
     private AuthService $authService;
-
+    private OrderService $orderService;
     /**
      * InitController constructor.
      * @param ConfigurationService $configService
@@ -42,12 +44,14 @@ class AuthController extends BaseController
     public function __construct(
         ConfigurationService $configService,
         WishAuthProxyInterface $authProxy,
-        AuthService $authService
+        AuthService $authService,
+        OrderService $orderService
     )
     {
         parent::__construct($configService);
         $this->authProxy = $authProxy;
         $this->authService = $authService;
+        $this->orderService = $orderService;
     }
 
     /**
@@ -64,6 +68,9 @@ class AuthController extends BaseController
             } else {
                 $this->authService->createNewUser($authInfo, $this->configService->getContext());
             }
+
+//            $ids = $this->orderService->getAllOrderIds();
+//            $this->orderService->getOrders($ids);
 
             return redirect(RouterService::getRedirectUrl(
                 self::DASHBOARD_ROUTE,

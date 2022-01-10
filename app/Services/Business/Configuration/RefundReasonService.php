@@ -47,4 +47,26 @@ class RefundReasonService implements RefundReasonServiceInterface
         }
         $this->configRepository->saveValue('REFUND_REASON', $refundReasonCode, $context);
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function getCancelReason(?string $context): ?string
+    {
+        if ($context === null) {
+            return null;
+        }
+        return $this->configRepository->getValue('CANCEL_REASON', $context) ?: null;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function saveCancelReason(string $cancelReasonCode, ?string $context): void
+    {
+        if ($context === null) {
+            return;
+        }
+        $this->configRepository->saveValue('CANCEL_REASON', $cancelReasonCode, $context);
+    }
 }

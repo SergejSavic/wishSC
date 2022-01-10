@@ -64,17 +64,17 @@
             </div>
         </div>
 
-        <div id="second_configuration" class="">
+        <div id="second_configuration" class="sc-hidden">
             <h3>{{__('wish.configure.return.type.title')}}</h3>
             <p>{{__('wish.configure.cancel.type.description')}}</p>
             <div class="sc-warehouse-wrapper sc-form-group-wrapper">
                 <div class="sc-form-row">
-                    <label for="refund">
+                    <label for="cancel">
                         {{__('wish.configure.return.type.label')}}:
                     </label>
-                    <select name="refund" id="refund" required>
-                        @foreach($refundReasons as $refundReason)
-                            <option value="{{$refundReason}}">{{$refundReason}}</option>
+                    <select name="cancel" id="cancel" required>
+                        @foreach($cancellationReasons as $cancellationReason)
+                            <option value="{{$cancellationReason['value']}}">{{$cancellationReason['label']}}</option>
                         @endforeach
                     </select>
                 </div>

@@ -14,6 +14,14 @@
             for (let i = 0; i < document['configuration'].elements.length; i++) {
                 document['configuration'].elements[i].addEventListener('change', removeValidationClassFromElement);
             }
+
+            document.getElementById('enable-cancellation').addEventListener('change', function () {
+                if (document.getElementById('enable-cancellation').checked) {
+                    showReturnConfiguration();
+                } else {
+                    hideReturnConfiguration();
+                }
+            })
         }
 
         /**
@@ -27,9 +35,26 @@
             SendCloud.Ajax.get(url, null, function (response) {
                 if (response) {
                     setFormElements(response);
+                    if (response['automaticCancellation'] === true) {
+                        document.getElementById('second_configuration').classList.remove('sc-hidden');
+                    }
                     SendCloud.Spinner.hide();
                 }
             }, 'json', true);
+        }
+
+        /**
+         * Hides return configuration
+         */
+        function hideReturnConfiguration() {
+            document.getElementById('second_configuration').classList.toggle('sc-hidden', true);
+        }
+
+        /**
+         * Shows return configuration
+         */
+        function showReturnConfiguration() {
+            document.getElementById('second_configuration').classList.toggle('sc-hidden', false);
         }
 
         /**
@@ -67,7 +92,7 @@
         function createConfigTransferObject() {
             let inputs = {};
 
-            inputs['refund'] = null;
+            inputs['cancel'] = null;
             inputs['automaticCancellation'] = false;
             inputs['warehouses'] = {};
             inputs['shipmentType'] = null;
@@ -76,17 +101,17 @@
             let arr = {};
 
             if (document.getElementById('enable-cancellation').checked) {
-                inputs['refund'] = document.getElementById('refund').value;
+                inputs['cancel'] = document.getElementById('cancel').value;
                 inputs['automaticCancellation'] = true;
             }
             for (let i = 0; i < warehouses.length; i++) {
                 arr[warehouses[i].id.toString()] = document.getElementById(warehouses[i].id).value;
             }
-            inputs['warehouses'] = JSON. stringify(arr);
+            inputs['warehouses'] = JSON.stringify(arr);
             inputs['shipmentType'] = document.getElementById('shipment-type').value;
             inputs['country'] = document.getElementById('country').value;
             inputs['hsCode'] = document.getElementById('hs-code').value;
-
+            console.log(inputs);
             return inputs;
         }
 
@@ -96,7 +121,7 @@
          * @param response
          */
         function setFormElements(response) {
-            let refund = document.getElementById('refund');
+            let cancel = document.getElementById('cancel');
             let shipmentType = document.getElementById('shipment-type');
             let country = document.getElementById('country');
             let hsCode = document.getElementById('hs-code');
@@ -104,8 +129,8 @@
 
             document.getElementById('enable-cancellation').checked = response['automaticCancellation'];
 
-            if (response['refund'] !== null && response['refund'] !== "null") {
-                refund.value = response['refund'].toString();
+            if (response['cancel'] !== null && response['cancel'] !== "null") {
+                cancel.value = response['cancel'].toString();
             }
             if (response['warehouses'] !== null && response['warehouses'] !== "null") {
                 for (let i = 0; i < warehouses.length; i++) {

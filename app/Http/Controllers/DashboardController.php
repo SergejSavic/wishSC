@@ -55,7 +55,7 @@ class DashboardController extends MiddlewareDashboardController
         $data['senderAddresses'] = $this->getSenderAddressViewData();
         $data['countries'] = $this->getCountries();
         $data['shipmentTypes'] = $this->getShipmentTypes();
-        $data['refundReasons'] = $this->getRefundReasons();
+        $data['cancellationReasons'] = $this->getCancellationReasons();
         $data['warehouses'] = $this->getWarehouses();
 
         return $data;
@@ -149,9 +149,19 @@ class DashboardController extends MiddlewareDashboardController
     /**
      * @return string[]
      */
-    public function getRefundReasons(): array
+    public function getCancellationReasons(): array
     {
-        return [self::ITEM_RETURNED_TO_SENDER, self::ITEM_IS_DAMAGED];
+        $cancellationReasons = [self::ITEM_IS_DAMAGED, self::ITEM_RETURNED_TO_SENDER];
+        $data = [];
+
+        foreach ($cancellationReasons as $reason) {
+            $data[] = [
+                'value' => $reason,
+                'label' => str_replace('_', ' ', $reason)
+            ];
+        }
+
+        return $data;
     }
 
     /**
