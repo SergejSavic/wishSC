@@ -1,0 +1,17 @@
+.git
+.idea
+.env
+.docker/dev/**
+mysql.env
+node_modules
+bootstrap/cache/**
+database/data/**
+storage/framework/cache/**
+storage/framework/sessions/**
+storage/framework/views/**
+storage/framework/testing/**
+storage/logs/**
+storage_cron
+public/sendcloud/js/**
+public/sendcloud/css/**
+etc/**

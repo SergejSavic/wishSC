@@ -1,0 +1,6 @@
+#!/bin/bash
+
+php artisan migrate -n --force
+php artisan config:cache -n
+
+php-fpm

@@ -34,13 +34,13 @@ class SendCloudRouter extends MiddlewareSendCloudRouter
      * @param ConnectService $connectService
      * @param Queue $queue
      * @param Configuration $configService
-     * @param WishAuthServiceInterface $miraklAuthService
+     * @param WishAuthServiceInterface $authService
      */
-    public function __construct(ConnectService $connectService, Queue $queue, Configuration $configService, WishAuthServiceInterface $miraklAuthService)
+    public function __construct(ConnectService $connectService, Queue $queue, Configuration $configService, WishAuthServiceInterface $authService)
     {
         parent::__construct($connectService, $queue);
         $this->configService = $configService;
-        $this->wishAuthService = $miraklAuthService;
+        $this->wishAuthService = $authService;
     }
 
     /**

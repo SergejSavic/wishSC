@@ -2,8 +2,8 @@ version: '3'
 
 # This compose file is used for testing and development purposes and can be used only as a reference for production setup
 services:
-  mirakl:
-    image: sendcloud/mirakl
+  wish:
+    image: sendcloud/wish
     build:
       context: .
       dockerfile: app.Dockerfile
@@ -24,18 +24,18 @@ services:
     networks:
       - app-network
 
-  mirakl-nginx:
-    image: sendcloud/mirakl-nginx
+  wish-nginx:
+    image: sendcloud/wish-nginx
     build:
       context: .
       dockerfile: web.Dockerfile
-    container_name: mirakl-nginx
+    container_name: wish-nginx
     tty: true
     ports:
       - "80:8001"
       - "443:8001"
     depends_on:
-      - mirakl
+      - wish
     volumes:
       - ./:/var/www
       - ./.docker/dev/conf:/etc/nginx/conf.d/
@@ -44,9 +44,9 @@ services:
       - app-network
 
   cron:
-    image: sendcloud/mirakl
+    image: sendcloud/wish
     depends_on:
-      - mirakl
+      - wish
       - database
     working_dir: /var/www
     env_file: '.env'
