@@ -1,5 +1,8 @@
 /node_modules
-/public
+/public/hot
+/public/storage
+public/sendcloud/js/**
+public/sendcloud/css/**
 /storage/*.key
 /vendor
 .env
