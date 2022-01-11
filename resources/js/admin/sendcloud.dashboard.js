@@ -15,13 +15,14 @@
                 document['configuration'].elements[i].addEventListener('change', removeValidationClassFromElement);
             }
 
-            document.getElementById('enable-cancellation').addEventListener('change', function () {
-                if (document.getElementById('enable-cancellation').checked) {
-                    showReturnConfiguration();
+            //add toggle option for automatic return check box
+            document.getElementById('enable-return').addEventListener('change', function () {
+                if (document.getElementById('enable-return').checked) {
+                    showConfiguration('first_configuration');
                 } else {
-                    hideReturnConfiguration();
+                    hideConfiguration('first_configuration');
                 }
-            })
+            });
         }
 
         /**
@@ -35,8 +36,9 @@
             SendCloud.Ajax.get(url, null, function (response) {
                 if (response) {
                     setFormElements(response);
-                    if (response['automaticCancellation'] === true) {
-                        document.getElementById('second_configuration').classList.remove('sc-hidden');
+
+                    if (response['automaticReturn'] === true) {
+                        document.getElementById('first_configuration').classList.remove('sc-hidden');
                     }
                     SendCloud.Spinner.hide();
                 }
@@ -46,15 +48,15 @@
         /**
          * Hides return configuration
          */
-        function hideReturnConfiguration() {
-            document.getElementById('second_configuration').classList.toggle('sc-hidden', true);
+        function hideConfiguration(configuration) {
+            document.getElementById(configuration).classList.toggle('sc-hidden', true);
         }
 
         /**
          * Shows return configuration
          */
-        function showReturnConfiguration() {
-            document.getElementById('second_configuration').classList.toggle('sc-hidden', false);
+        function showConfiguration(configuration) {
+            document.getElementById(configuration).classList.toggle('sc-hidden', false);
         }
 
         /**
@@ -92,17 +94,17 @@
         function createConfigTransferObject() {
             let inputs = {};
 
-            inputs['cancel'] = null;
-            inputs['automaticCancellation'] = false;
+            inputs['return'] = null;
+            inputs['automaticReturn'] = false;
             inputs['warehouses'] = {};
             inputs['shipmentType'] = null;
             inputs['country'] = null;
             inputs['hsCode'] = null;
             let arr = {};
 
-            if (document.getElementById('enable-cancellation').checked) {
-                inputs['cancel'] = document.getElementById('cancel').value;
-                inputs['automaticCancellation'] = true;
+            if (document.getElementById('enable-return').checked) {
+                inputs['return'] = document.getElementById('return').value;
+                inputs['automaticReturn'] = true;
             }
             for (let i = 0; i < warehouses.length; i++) {
                 arr[warehouses[i].id.toString()] = document.getElementById(warehouses[i].id).value;
@@ -121,16 +123,16 @@
          * @param response
          */
         function setFormElements(response) {
-            let cancel = document.getElementById('cancel');
+            let returnReason = document.getElementById('return');
             let shipmentType = document.getElementById('shipment-type');
             let country = document.getElementById('country');
             let hsCode = document.getElementById('hs-code');
             let warehouseMapping = JSON.parse(response['warehouses']);
 
-            document.getElementById('enable-cancellation').checked = response['automaticCancellation'];
+            document.getElementById('enable-return').checked = response['automaticReturn'];
 
-            if (response['cancel'] !== null && response['cancel'] !== "null") {
-                cancel.value = response['cancel'].toString();
+            if (response['return'] !== null && response['return'] !== "null") {
+                returnReason.value = response['return'].toString();
             }
             if (response['warehouses'] !== null && response['warehouses'] !== "null") {
                 for (let i = 0; i < warehouses.length; i++) {
