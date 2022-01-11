@@ -20,8 +20,8 @@ return [
     'configuration.enable.return.label' => 'Enable returns',
 
     'configure.return.type.title' => 'Configure default refund reason',
-    'configure.cancel.type.description' => 'Select the default refund reason that will be used when a parcel is cancelled in Sendcloud. If not set,refund won\'t be created.',
-    'configure.return.type.description' => 'Select the default refund values that will be used when a return is created in Sendcloud. If not set,refund won\'t be created.',
+    'configure.cancel.type.description' => 'Select the default refund reason that will be used when a parcel is cancelled in Sendcloud. If not set, refund won\'t be created.',
+    'configure.return.type.description' => 'Select the default refund values that will be used when a return is created in Sendcloud. If not set, refund won\'t be created.',
     'configure.return.type.label' => 'Refund reason',
 
     'configuration.save' => 'Save',

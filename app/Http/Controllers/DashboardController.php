@@ -24,6 +24,7 @@ class DashboardController extends MiddlewareDashboardController
 {
     private const ITEM_RETURNED_TO_SENDER = 'ITEM_RETURNED_TO_SENDER';
     private const ITEM_IS_DAMAGED = 'ITEM_IS_DAMAGED';
+    private const UNABLE_TO_SHIP = 'UNABLE_TO_SHIP';
 
     /**
      * @var WishProxyInterface
@@ -55,7 +56,8 @@ class DashboardController extends MiddlewareDashboardController
         $data['senderAddresses'] = $this->getSenderAddressViewData();
         $data['countries'] = $this->getCountries();
         $data['shipmentTypes'] = $this->getShipmentTypes();
-        $data['cancellationReasons'] = $this->getCancellationReasons();
+        $data['cancellationReasons'] = $this->getRefundReasons();
+        $data['returnReasons'] = $this->getRefundReasons();
         $data['warehouses'] = $this->getWarehouses();
 
         return $data;
@@ -149,7 +151,7 @@ class DashboardController extends MiddlewareDashboardController
     /**
      * @return string[]
      */
-    public function getCancellationReasons(): array
+    public function getRefundReasons(): array
     {
         $cancellationReasons = [self::ITEM_IS_DAMAGED, self::ITEM_RETURNED_TO_SENDER];
         $data = [];

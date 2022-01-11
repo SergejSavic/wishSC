@@ -10,7 +10,7 @@ interface RefundReasonServiceInterface
      * @param string|null $context
      * @return string|null
      */
-    public function getRefundReason(?string $context): ?string;
+    public function getReturnReason(?string $context): ?string;
 
     /**
      * Save refund reason for specific context
@@ -18,20 +18,21 @@ interface RefundReasonServiceInterface
      * @param string $refundReasonCode
      * @param string|null $context
      */
-    public function saveRefundReason(string $refundReasonCode, ?string $context): void;
+    public function saveReturnReason(string $refundReasonCode, ?string $context): void;
+
     /**
-     * Get cancel reason code
+     * Get cancellation reason code
      *
      * @param string|null $context
      * @return string|null
      */
-    public function getCancelReason(?string $context): ?string;
+    public function getCancellationReason(?string $context): ?string;
 
     /**
-     * Save cancel reason for specific context
+     * Save cancellation reason for specific context
      *
      * @param string $cancelReasonCode
      * @param string|null $context
      */
-    public function saveCancelReason(string $cancelReasonCode, ?string $context): void;
+    public function saveCancellationReason(string $cancelReasonCode, ?string $context): void;
 }

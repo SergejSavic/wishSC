@@ -7,7 +7,6 @@ use App\Contracts\Proxy\WishProxyInterface;
 use App\Contracts\Repositories\UserRepositoryInterface;
 use App\Contracts\Services\Auth\WishAuthServiceInterface;
 use App\Contracts\Services\Auth\WishTokenServiceInterface;
-use App\Contracts\Services\AutomaticCancellationServiceInterface;
 use App\Contracts\Services\Orders\Wish\RefundServiceInterface;
 use App\Contracts\Services\Orders\Wish\ShipmentServiceInterface;
 use App\Contracts\Services\RefundReasonServiceInterface;
@@ -21,7 +20,6 @@ use SendCloud\MiddlewareComponents\Controllers\Backend\InitialSyncController as 
 use App\Repositories\UserRepository;
 use App\Services\Business\Authentication\AuthService;
 use App\Services\Business\Authentication\TokenService;
-use App\Services\Business\Configuration\AutomaticCancellationService;
 use App\Services\Business\Configuration\ConfigurationService;
 use App\Services\Business\Configuration\RefundReasonService;
 use App\Services\Business\Orders\Sendcloud\OrderService;
@@ -98,7 +96,6 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(ShipmentServiceInterface::class, ShipmentService::class);
         $this->app->singleton(RefundServiceInterface::class, RefundService::class);
         $this->app->singleton(RefundReasonServiceInterface::class, RefundReasonService::class);
-        $this->app->singleton(AutomaticCancellationServiceInterface::class, AutomaticCancellationService::class);
     }
 
     /**

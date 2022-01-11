@@ -9,7 +9,8 @@
                 @foreach($warehouses as $warehouse)
                     <div class="sc-form-row">
                         <label for="{{$warehouse->getId()}}">{{$warehouse->getName()}}:</label>
-                        <select name="{{$warehouse->getId()}}" id="{{$warehouse->getId()}}" class="warehouse-mapping" required>
+                        <select name="{{$warehouse->getId()}}" id="{{$warehouse->getId()}}" class="warehouse-mapping"
+                                required>
                             @foreach($senderAddresses as $senderAddresse)
                                 <option value="{{$senderAddresse['value']}}">{{$senderAddresse['label']}}</option>
                             @endforeach
@@ -48,7 +49,7 @@
                 <label for="hs-code">
                     {{__('wish.configure.international.shipping.mapping.hs_code.label')}}:
                 </label>
-                <input type="text" name="hsCode" id="hs-code" required />
+                <input type="text" name="hsCode" id="hs-code" required/>
             </div>
         </div>
 
@@ -75,6 +76,35 @@
                     <select name="cancel" id="cancel" required>
                         @foreach($cancellationReasons as $cancellationReason)
                             <option value="{{$cancellationReason['value']}}">{{$cancellationReason['label']}}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <h3>{{__('wish.configuration.enable.return.title')}}</h3>
+        <p>{{__('wish.configuration.enable.return.description')}}</p>
+        <div class="sc-location-wrapper sc-form-group-wrapper">
+            <div class="sc-form-row">
+                <label class="sc-checkbox-container"
+                       for="enable-cancellation">{{__('wish.configuration.enable.return.label')}}
+                    :</label>
+                <input type="checkbox" name="automaticReturn" id="enable-return">
+
+            </div>
+        </div>
+
+        <div id="first_configuration" class="sc-hidden">
+            <h3>{{__('wish.configure.return.type.title')}}</h3>
+            <p>{{__('wish.configure.return.type.description')}}</p>
+            <div class="sc-warehouse-wrapper sc-form-group-wrapper">
+                <div class="sc-form-row">
+                    <label for="return">
+                        {{__('wish.configure.return.type.label')}}:
+                    </label>
+                    <select name="return" id="return" required>
+                        @foreach($returnReasons as $returnReason)
+                            <option value="{{$returnReason['value']}}">{{$returnReason['label']}}</option>
                         @endforeach
                     </select>
                 </div>

@@ -195,4 +195,54 @@ class ConfigurationService extends MiddlewareConfigurationService
 
         $this->configRepository->saveValue('WAREHOUSE_MAPPING', $mapping, $this->getContext());
     }
+
+    /**
+     * @param string|null $context
+     * @return bool
+     */
+    public function isAutomaticCancellationEnabled(?string $context): bool
+    {
+        if ($context === null) {
+            return false;
+        }
+        return $this->configRepository->getValue('AUTOMATIC_CANCELLATION', $context) ?: false;
+    }
+
+    /**
+     * @param bool $automaticCancellation
+     * @param string|null $context
+     * @return void
+     */
+    public function setAutomaticCancellation(bool $automaticCancellation, ?string $context): void
+    {
+        if ($context === null) {
+            return;
+        }
+        $this->configRepository->saveValue('AUTOMATIC_CANCELLATION', $automaticCancellation, $context);
+    }
+
+    /**
+     * @param string|null $context
+     * @return bool
+     */
+    public function isAutomaticReturnEnabled(?string $context): bool
+    {
+        if ($context === null) {
+            return false;
+        }
+        return $this->configRepository->getValue('AUTOMATIC_RETURN', $context) ?: false;
+    }
+
+    /**
+     * @param bool $automaticReturn
+     * @param string|null $context
+     * @return void
+     */
+    public function setAutomaticReturn(bool $automaticReturn, ?string $context): void
+    {
+        if ($context === null) {
+            return;
+        }
+        $this->configRepository->saveValue('AUTOMATIC_RETURN', $automaticReturn, $context);
+    }
 }

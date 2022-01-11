@@ -29,29 +29,29 @@ class RefundReasonService implements RefundReasonServiceInterface
     /**
      * @inheritdoc
      */
-    public function getRefundReason(?string $context): ?string
+    public function getReturnReason(?string $context): ?string
     {
         if ($context === null) {
             return null;
         }
-        return $this->configRepository->getValue('REFUND_REASON', $context) ?: null;
+        return $this->configRepository->getValue('RETURN_REASON', $context) ?: null;
     }
 
     /**
      * @inheritdoc
      */
-    public function saveRefundReason(string $refundReasonCode, ?string $context): void
+    public function saveReturnReason(string $refundReasonCode, ?string $context): void
     {
         if ($context === null) {
             return;
         }
-        $this->configRepository->saveValue('REFUND_REASON', $refundReasonCode, $context);
+        $this->configRepository->saveValue('RETURN_REASON', $refundReasonCode, $context);
     }
 
     /**
      * @inheritdoc
      */
-    public function getCancelReason(?string $context): ?string
+    public function getCancellationReason(?string $context): ?string
     {
         if ($context === null) {
             return null;
@@ -62,7 +62,7 @@ class RefundReasonService implements RefundReasonServiceInterface
     /**
      * @inheritdoc
      */
-    public function saveCancelReason(string $cancelReasonCode, ?string $context): void
+    public function saveCancellationReason(string $cancelReasonCode, ?string $context): void
     {
         if ($context === null) {
             return;
