@@ -47,9 +47,7 @@ class ConfigurationController
      */
     public function get(): JsonResponse
     {
-        $cancellationReason = $this->refundReasonService->getCancellationReason($this->configurationService->getContext());
         $returnReason = $this->refundReasonService->getReturnReason($this->configurationService->getContext());
-        $automaticCancellation = $this->configurationService->isAutomaticCancellationEnabled($this->configurationService->getContext());
         $automaticReturn = $this->configurationService->isAutomaticReturnEnabled($this->configurationService->getContext());
         $warehouseMapping = $this->configurationService->getWarehouseMapping();
         $shipmentType = $this->configurationService->getShipmentType();
@@ -57,9 +55,7 @@ class ConfigurationController
         $hsCode = $this->configurationService->getHsCode();
 
         return response()->json([
-            'cancel' => $cancellationReason,
             'return' => $returnReason,
-            'automaticCancellation' => $automaticCancellation,
             'automaticReturn' => $automaticReturn,
             'warehouses' => $warehouseMapping,
             'shipmentType' => $shipmentType,
@@ -82,9 +78,7 @@ class ConfigurationController
         $this->saveValues($request, $this->configurationService->getContext());
 
         return response()->json([
-            'cancel' => $request->get('cancel'),
             'return' => $request->get('return'),
-            'automaticCancellation' => filter_var($request->get('automaticCancellation'), FILTER_VALIDATE_BOOLEAN),
             'automaticReturn' => filter_var($request->get('automaticReturn'), FILTER_VALIDATE_BOOLEAN),
             'shipmentType' => $request->get('shipmentType'),
             'warehouses' => $request->get('warehouses'),
@@ -101,7 +95,7 @@ class ConfigurationController
      */
     private function verifyPayload(Request $request): void
     {
-        $expectedKeys = ['warehouses', 'shipmentType', 'country', 'hsCode', 'cancel', 'return' ,'automaticCancellation', 'automaticReturn'];
+        $expectedKeys = ['warehouses', 'shipmentType', 'country', 'hsCode', 'return', 'automaticReturn'];
 
         $this->verifyArrayKeys($expectedKeys, $request);
     }
@@ -136,18 +130,8 @@ class ConfigurationController
             return;
         }
 
-        $this->refundReasonService->saveCancellationReason(
-            $request->get('cancel'),
-            $context
-        );
-
         $this->refundReasonService->saveReturnReason(
             $request->get('return'),
-            $context
-        );
-
-        $this->configurationService->setAutomaticCancellation(
-            filter_var($request->get('automaticCancellation'), FILTER_VALIDATE_BOOLEAN),
             $context
         );
 

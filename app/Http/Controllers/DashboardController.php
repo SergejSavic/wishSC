@@ -56,7 +56,6 @@ class DashboardController extends MiddlewareDashboardController
         $data['senderAddresses'] = $this->getSenderAddressViewData();
         $data['countries'] = $this->getCountries();
         $data['shipmentTypes'] = $this->getShipmentTypes();
-        $data['cancellationReasons'] = $this->getRefundReasons();
         $data['returnReasons'] = $this->getRefundReasons();
         $data['warehouses'] = $this->getWarehouses();
 

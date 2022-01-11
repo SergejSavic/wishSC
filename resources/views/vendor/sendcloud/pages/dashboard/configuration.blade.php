@@ -53,41 +53,12 @@
             </div>
         </div>
 
-        <h3>{{__('wish.configuration.enable.automatic.cancellation.title')}}</h3>
-        <p>{{__('wish.configuration.enable.automatic.cancellation.description')}}</p>
-        <div class="sc-location-wrapper sc-form-group-wrapper">
-            <div class="sc-form-row">
-                <label class="sc-checkbox-container"
-                       for="enable-cancellation">{{__('wish.configuration.enable.automatic.cancellation.label')}}
-                    :</label>
-                <input type="checkbox" name="automaticCancellation" id="enable-cancellation">
-
-            </div>
-        </div>
-
-        <div id="second_configuration" class="sc-hidden">
-            <h3>{{__('wish.configure.return.type.title')}}</h3>
-            <p>{{__('wish.configure.cancel.type.description')}}</p>
-            <div class="sc-warehouse-wrapper sc-form-group-wrapper">
-                <div class="sc-form-row">
-                    <label for="cancel">
-                        {{__('wish.configure.return.type.label')}}:
-                    </label>
-                    <select name="cancel" id="cancel" required>
-                        @foreach($cancellationReasons as $cancellationReason)
-                            <option value="{{$cancellationReason['value']}}">{{$cancellationReason['label']}}</option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-        </div>
-
         <h3>{{__('wish.configuration.enable.return.title')}}</h3>
         <p>{{__('wish.configuration.enable.return.description')}}</p>
         <div class="sc-location-wrapper sc-form-group-wrapper">
             <div class="sc-form-row">
                 <label class="sc-checkbox-container"
-                       for="enable-cancellation">{{__('wish.configuration.enable.return.label')}}
+                       for="enable-return">{{__('wish.configuration.enable.return.label')}}
                     :</label>
                 <input type="checkbox" name="automaticReturn" id="enable-return">
 

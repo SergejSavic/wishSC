@@ -31,7 +31,6 @@ use SendCloud\Infrastructure\Utility\Exceptions\HttpRequestException;
 class OrderService implements OrderServiceInterface
 {
     private const WISH_ORDER_STATE = 'APPROVED';
-    private const CANCELLATION_REASON_NOTE = 'Parcel canceled';
     private const RETURN_REASON_NOTE = 'Sendcloud return created';
 
     /** * fulfillment statuses handled by Wish */
@@ -191,9 +190,6 @@ class OrderService implements OrderServiceInterface
         try {
             $parcel = Parcel::fromArray($this->sendcloudProxy->getParcelById($order->getSendCloudParcelId()));
             if ($order->getSendCloudStatus() === 'Cancelled' || $order->getSendCloudStatus() === 'Cancellation requested') {
-                if ($refundReason = $this->refundReasonService->getCancellationReason($this->configurationService->getContext())) {
-                    $this->refundService->createRefund($parcel, $refundReason, self::CANCELLATION_REASON_NOTE);
-                }
                 return;
             }
 
@@ -216,7 +212,7 @@ class OrderService implements OrderServiceInterface
     /**
      * @inheritdoc
      */
-    public function orderSyncCompleted(array $orderIds)
+    public function orderSyncCompleted(array $orderIds): void
     {
         // There is nothing to do when order synchronization is completed.
     }
@@ -290,7 +286,7 @@ class OrderService implements OrderServiceInterface
         $country = $variation->getLogisticsDetails()->getOriginCountry();
         $country = ($country !== null && $country !== '') ? $country : $this->configurationService->getCountry();
         $sendCloudItem->setOriginCountry($country);
-        $sendCloudItem->setValue(round($this->getValue($order), 2));
+        $sendCloudItem->setValue(round($order->getOrderPayment()->getGeneralPaymentDetails()->getProductPrice()->getAmount(), 2));
         $sendCloudItem->setSku($order->getProductInformation()->getSku());
         $sendCloudItem->setProductId($order->getProductInformation()->getId());
         $sendCloudItem->setProperties(

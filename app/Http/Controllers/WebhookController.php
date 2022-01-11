@@ -9,7 +9,6 @@ use SendCloud\BusinessLogic\Sync\OrderSyncTask;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use App\Exceptions\UnauthorizedException;
 use SendCloud\MiddlewareComponents\Utility\TaskQueue;
 
 /**
@@ -25,7 +24,7 @@ class WebhookController
     /**
      * @param Request $request
      * @return JsonResponse
-     * @throws RequestPayloadNotValid|UnauthorizedException
+     * @throws RequestPayloadNotValid
      * @throws JsonException
      */
     public function handle(Request $request): JsonResponse
