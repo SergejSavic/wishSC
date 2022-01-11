@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Contracts\Repositories\UserRepositoryInterface;
 use App\Models\WishUser;
 use Exception;
+use Illuminate\Console\Command;
 use SendCloud\MiddlewareComponents\Models\Repository\ConfigRepository;
 use SendCloud\MiddlewareComponents\Models\Repository\QueueItemRepository;
 
@@ -12,21 +13,21 @@ use SendCloud\MiddlewareComponents\Models\Repository\QueueItemRepository;
  * Class DeleteInactiveUsers
  * @package App\Console\Commands
  */
-class DeleteInactiveUsers
+class DeleteInactiveUsers extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected string $signature = 'sendcloud:delete_inactive_users';
+    protected $signature = 'sendcloud:delete_inactive_users';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected string $description = 'Removes inactive users';
+    protected $description = 'Removes inactive users';
 
     /**
      * Execute the console command.

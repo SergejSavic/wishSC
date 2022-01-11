@@ -9,7 +9,6 @@ use DateInterval;
 use DateTime;
 use Exception;
 use SendCloud\MiddlewareComponents\Models\QueueItem;
-use SendCloud\MiddlewareComponents\Models\Repository\QueueItemRepository;
 
 /**
  * Class UserRepository
@@ -35,7 +34,6 @@ class UserRepository implements UserRepositoryInterface
     public function createNewUser(AuthInfo $result, string $context): void
     {
         $user = new WishUser();
-
         $user->context = $context;
         $this->saveAuthData($result, $user);
     }
@@ -84,9 +82,19 @@ class UserRepository implements UserRepositoryInterface
     {
         $currentTime = new DateTime('@' . time());
         $earliestValidTime = $currentTime->sub(new DateInterval('P120D'));
+        $allContexts = $this->getAllContexts();
+        $inactiveContexts = [];
 
-        return QueueItem::query()->where('lastUpdateTimestamp', '<', $earliestValidTime->getTimestamp())
-            ->pluck('context')
-            ->toArray();
+        foreach ($allContexts as $context) {
+            $queueItems = QueueItem::query()->where([['context', '=', $context], ['lastUpdateTimestamp', '>', $earliestValidTime->getTimestamp()]])
+                ->pluck('context')
+                ->toArray();
+
+            if (count($queueItems) === 0) {
+                $inactiveContexts[] = $context;
+            }
+        }
+
+        return $inactiveContexts;
     }
 }

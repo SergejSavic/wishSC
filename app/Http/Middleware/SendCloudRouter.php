@@ -48,7 +48,6 @@ class SendCloudRouter extends MiddlewareSendCloudRouter
      *
      * @param Request $request
      * @param Closure $next
-     *
      * @return mixed
      * @throws HttpRequestException
      */

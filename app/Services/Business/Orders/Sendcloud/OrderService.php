@@ -189,7 +189,7 @@ class OrderService implements OrderServiceInterface
         try {
             $parcel = Parcel::fromArray($this->sendcloudProxy->getParcelById($order->getSendCloudParcelId()));
             if ($order->getSendCloudStatus() === 'Cancelled' || $order->getSendCloudStatus() === 'Cancellation requested') {
-                if ($refundReason = $this->refundReasonService->getRefundReason($this->configurationService->getContext())) {
+                if ($refundReason = $this->refundReasonService->getCancellationReason($this->configurationService->getContext())) {
                     $this->refundService->createRefund($parcel, $refundReason);
                 }
                 return;
