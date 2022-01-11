@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Contracts\Services\AutomaticCancellationServiceInterface;
 use App\Contracts\Services\RefundReasonServiceInterface;
 use App\Exceptions\RequestPayloadNotValid;
 use App\Exceptions\UnauthorizedException;
@@ -25,27 +24,20 @@ class ConfigurationController
      * @var RefundReasonServiceInterface
      */
     private RefundReasonServiceInterface $refundReasonService;
-    /**
-     * @var AutomaticCancellationServiceInterface
-     */
-    private AutomaticCancellationServiceInterface $automaticCancellationService;
 
     /**
      * ConfigurationController constructor.
      *
      * @param RefundReasonServiceInterface $refundReasonService
      * @param Configuration $configurationService
-     * @param AutomaticCancellationServiceInterface $automaticCancellationService
      */
     public function __construct(
         RefundReasonServiceInterface $refundReasonService,
         Configuration $configurationService,
-        AutomaticCancellationServiceInterface $automaticCancellationService
     )
     {
         $this->refundReasonService = $refundReasonService;
         $this->configurationService = $configurationService;
-        $this->automaticCancellationService = $automaticCancellationService;
     }
 
     /**
@@ -55,16 +47,20 @@ class ConfigurationController
      */
     public function get(): JsonResponse
     {
-        $cancelReasonCode = $this->refundReasonService->getCancelReason($this->configurationService->getContext());
-        $automaticCancellation = $this->automaticCancellationService->isAutomaticCancellationEnabled($this->configurationService->getContext());
+        $cancellationReason = $this->refundReasonService->getCancellationReason($this->configurationService->getContext());
+        $returnReason = $this->refundReasonService->getReturnReason($this->configurationService->getContext());
+        $automaticCancellation = $this->configurationService->isAutomaticCancellationEnabled($this->configurationService->getContext());
+        $automaticReturn = $this->configurationService->isAutomaticReturnEnabled($this->configurationService->getContext());
         $warehouseMapping = $this->configurationService->getWarehouseMapping();
         $shipmentType = $this->configurationService->getShipmentType();
         $country = $this->configurationService->getCountry();
         $hsCode = $this->configurationService->getHsCode();
 
         return response()->json([
-            'cancel' => $cancelReasonCode,
+            'cancel' => $cancellationReason,
+            'return' => $returnReason,
             'automaticCancellation' => $automaticCancellation,
+            'automaticReturn' => $automaticReturn,
             'warehouses' => $warehouseMapping,
             'shipmentType' => $shipmentType,
             'country' => $country,
@@ -87,7 +83,9 @@ class ConfigurationController
 
         return response()->json([
             'cancel' => $request->get('cancel'),
+            'return' => $request->get('return'),
             'automaticCancellation' => filter_var($request->get('automaticCancellation'), FILTER_VALIDATE_BOOLEAN),
+            'automaticReturn' => filter_var($request->get('automaticReturn'), FILTER_VALIDATE_BOOLEAN),
             'shipmentType' => $request->get('shipmentType'),
             'warehouses' => $request->get('warehouses'),
             'country' => $request->get('country'),
@@ -103,7 +101,7 @@ class ConfigurationController
      */
     private function verifyPayload(Request $request): void
     {
-        $expectedKeys = ['warehouses', 'shipmentType', 'country', 'hsCode', 'cancel', 'automaticCancellation'];
+        $expectedKeys = ['warehouses', 'shipmentType', 'country', 'hsCode', 'cancel', 'return' ,'automaticCancellation', 'automaticReturn'];
 
         $this->verifyArrayKeys($expectedKeys, $request);
     }
@@ -138,13 +136,23 @@ class ConfigurationController
             return;
         }
 
-        $this->refundReasonService->saveCancelReason(
+        $this->refundReasonService->saveCancellationReason(
             $request->get('cancel'),
             $context
         );
 
-        $this->automaticCancellationService->setAutomaticCancellation(
+        $this->refundReasonService->saveReturnReason(
+            $request->get('return'),
+            $context
+        );
+
+        $this->configurationService->setAutomaticCancellation(
             filter_var($request->get('automaticCancellation'), FILTER_VALIDATE_BOOLEAN),
+            $context
+        );
+
+        $this->configurationService->setAutomaticReturn(
+            filter_var($request->get('automaticReturn'), FILTER_VALIDATE_BOOLEAN),
             $context
         );
 
