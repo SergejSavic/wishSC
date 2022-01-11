@@ -11,6 +11,7 @@ interface RefundServiceInterface
      *
      * @param Parcel $parcel
      * @param string $refundReason
+     * @param string $refundReasonNote
      */
-    public function createRefund(Parcel $parcel, string $refundReason):void;
+    public function createRefund(Parcel $parcel, string $refundReason, string $refundReasonNote):void;
 }

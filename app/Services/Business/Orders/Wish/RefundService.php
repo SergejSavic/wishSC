@@ -14,8 +14,6 @@ use Exception;
  */
 class RefundService implements RefundServiceInterface
 {
-    private const REFUND_REASON_NOTE = 'Parcel canceled';
-
     /**
      * @var WishProxyInterface
      */
@@ -32,15 +30,16 @@ class RefundService implements RefundServiceInterface
     /**
      * @param Parcel $parcel
      * @param string $refundReason
+     * @param string $refundReasonNote
      * @return void
      * @throws Exception
      */
-    public function createRefund(Parcel $parcel, string $refundReason): void
+    public function createRefund(Parcel $parcel, string $refundReason, string $refundReasonNote): void
     {
         $wishOrder = $this->wishProxy->getOrderById($parcel->getExternalOrderId());
         $refund = new Refund();
         $refund->setRefundReason($refundReason);
-        $refund->setRefundReasonNote(self::REFUND_REASON_NOTE);
+        $refund->setRefundReasonNote($refundReasonNote);
 
         if ($wishOrder !== null) {
             $this->wishProxy->createRefund($refund, $wishOrder->getId());
