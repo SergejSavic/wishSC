@@ -31,6 +31,8 @@ use SendCloud\Infrastructure\Utility\Exceptions\HttpRequestException;
 class OrderService implements OrderServiceInterface
 {
     private const WISH_ORDER_STATE = 'APPROVED';
+    private const CANCELLATION_REASON_NOTE = 'Parcel canceled';
+    private const RETURN_REASON_NOTE = 'Sendcloud return created';
 
     /** * fulfillment statuses handled by Wish */
     private array $fulfillmentStatuses = ['FULFILLED_BY_WISH', 'FULFILLED_BY_STORE', 'ADVANCED_LOGISTICS'];
@@ -190,7 +192,14 @@ class OrderService implements OrderServiceInterface
             $parcel = Parcel::fromArray($this->sendcloudProxy->getParcelById($order->getSendCloudParcelId()));
             if ($order->getSendCloudStatus() === 'Cancelled' || $order->getSendCloudStatus() === 'Cancellation requested') {
                 if ($refundReason = $this->refundReasonService->getCancellationReason($this->configurationService->getContext())) {
-                    $this->refundService->createRefund($parcel, $refundReason);
+                    $this->refundService->createRefund($parcel, $refundReason, self::CANCELLATION_REASON_NOTE);
+                }
+                return;
+            }
+
+            if ($parcel->isIsReturn()) {
+                if ($refundReason = $this->refundReasonService->getReturnReason($this->configurationService->getContext())) {
+                    $this->refundService->createRefund($parcel, $refundReason, self::RETURN_REASON_NOTE);
                 }
                 return;
             }
